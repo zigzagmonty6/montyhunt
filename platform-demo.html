@@ -914,14 +914,14 @@
                 {misc.slice(0,20).map((r,i)=><tr key={i}><td>{r.question_text||r.question}</td><td className="latin" style={{color:'var(--red-bright)'}}>{r.pupil_answer||r.wrong_answer}</td><td className="latin" style={{color:'var(--green-bright)'}}>{r.correct_answer||r.correct}</td><td>{r.occurrences||r.count||r.n}</td></tr>)}
               </tbody></table></div>}
 
-            {tab==='preview'&&<div>
+            <div>
               <p style={{fontSize:'1.2rem',color:'var(--grey)',marginBottom:20}}>Click any set to preview. Progress will not be saved.</p>
               {nodes.map(node=>(<div key={node.label}><div className="section-label">{node.label}</div>
                 <div className="set-grid">{node.sets.map(s=>(<div key={s.id} className="set-card passed" onClick={()=>api(`/api/sets/${s.id}`).then(onStart)}>
                   <div className="tag-badge" style={{background:tagColorWithBadge(s.type,s.badge)}}>{tagLabelWithBadge(s.type,s.badge)}</div>
                   <h3 dangerouslySetInnerHTML={{__html:renderOrdinals(s.title)}}></h3>
                 </div>))}</div></div>))}
-            </div>}
+            </div>
 
             {tab==='pupil'&&selPupil&&<div style={{maxWidth:900}}>
               <h2 style={{fontSize:'1.8rem',marginBottom:20}}>{selPupil.first_name||selPupil.name}</h2>
