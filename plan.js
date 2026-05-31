@@ -435,11 +435,11 @@
       focusGrad.setAttribute('cx', ccx); focusGrad.setAttribute('cy', ccy);
       focusGrad.setAttribute('r', Math.hypot(rw, rh) / 2 + 120);
       dimOverlay.setAttribute('opacity', '0.62');
-      if (cmdEl) cmdEl.textContent = 'cd ./' + id;
+      if (cmdEl) cmdEl.textContent = id;
     } else {
       glow.setAttribute('opacity', '0');
       dimOverlay.setAttribute('opacity', '0');
-      if (cmdEl) cmdEl.textContent = 'ls';
+      if (cmdEl) cmdEl.textContent = 'home';
     }
   }
 
