@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Principal Parts Platform</title>
+  <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{--navy:#002147;--blue:#4A90D9;--green:#00C853;--red:#FF1744;--gold:#F5A623;--bg:#DCEEFB;--white:#fff;--lgrey:#CBD2D9;--grey:#7B8794;--card:#F0F4F8}
+    html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:var(--navy);font-size:16px}
+    button{font-family:'Inter',sans-serif;cursor:pointer;border:none;border-radius:12px;font-weight:700;transition:all .15s;display:inline-flex;align-items:center;justify-content:center}
+    button:active:not(:disabled){transform:scale(.96)}
+    button:disabled{opacity:.5;cursor:not-allowed}
+
+    /* Layout */
+    .shell{width:100%;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+    .topbar{background:var(--navy);color:#fff;padding:14px 40px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;box-shadow:0 4px 12px rgba(0,0,0,.15)}
+    .topbar-title{font-family:'Crimson Text',serif;font-size:1.35rem;letter-spacing:.12em;text-transform:uppercase;font-weight:600}
+    .topbar-right{display:flex;align-items:center;gap:14px}
+    .home-btn{font-family:'Inter',monospace;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#fff;text-decoration:none;padding:8px 14px;border:1.5px solid rgba(255,255,255,.45);border-radius:8px;transition:background .2s}
+    .home-btn:hover{background:rgba(255,255,255,.15)}
+    .score-chip{background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.3);border-radius:8px;padding:6px 14px;font-size:.85rem;font-weight:700;color:#fff}
+
+    /* Screens */
+    .screen{flex:1;overflow:hidden;display:none}
+    .screen.active{display:flex;flex-direction:column}
+
+    /* Intro screen */
+    .intro-body{flex:1;display:flex;align-items:center;justify-content:center;padding:40px}
+    .intro-box{background:#fff;border-radius:24px;padding:72px 80px;max-width:860px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,.08);text-align:center}
+    .intro-box h2{font-family:'Crimson Text',serif;font-size:3rem;color:var(--navy);margin-bottom:18px;font-weight:700}
+    .intro-box p{font-size:1.2rem;color:var(--grey);line-height:1.65;margin-bottom:12px;max-width:52ch;margin-left:auto;margin-right:auto}
+    .intro-box .note{font-size:1rem;color:var(--grey);opacity:.7;margin-bottom:40px}
+    .btn-start{background:var(--navy);color:#fff;font-size:1.15rem;padding:18px 52px;border-radius:14px;letter-spacing:.02em}
+    .btn-start:hover{background:#003580}
+
+    /* Drill screen */
+    .drill-bar{padding:20px 60px;display:flex;align-items:center;gap:24px;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.05);flex-shrink:0}
+    .progress-track{flex:1;height:14px;background:var(--lgrey);border-radius:7px;overflow:hidden}
+    .progress-fill{height:100%;background:var(--blue);border-radius:7px;transition:width .4s ease-out}
+    .drill-count{font-size:1rem;font-weight:700;color:var(--grey);white-space:nowrap;min-width:80px;text-align:right}
+
+    .drill-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4vh 60px 60px;overflow-y:auto;text-align:center}
+
+    .meaning-tag{background:var(--bg);border:2px solid var(--lgrey);border-radius:10px;padding:8px 22px;font-size:1rem;font-weight:600;color:var(--grey);margin-bottom:32px;display:inline-block}
+
+    /* Parts row */
+    .parts-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap;justify-content:center;margin-bottom:40px}
+    .part-sep{font-size:1.4rem;color:var(--lgrey)}
+    .part-chip{font-family:'Crimson Text',serif;font-style:italic;font-size:1.7rem;font-weight:700;color:var(--navy);background:#fff;border:2.5px solid var(--lgrey);border-radius:14px;padding:14px 22px;min-width:120px;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;min-height:82px;text-align:center}
+    .part-chip .chip-label{font-family:'Inter',sans-serif;font-style:normal;font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--grey);margin-bottom:4px}
+    .part-chip.correct{border-color:var(--green);background:#e8fdf0}
+    .part-chip.wrong{border-color:var(--red);background:#ffeaec}
+
+    .gap-input{font-family:'Crimson Text',serif;font-style:italic;font-size:1.8rem;font-weight:700;color:var(--navy);background:#fff;border:3.5px solid var(--lgrey);border-radius:14px;padding:14px 22px;min-width:140px;text-align:center;outline:none;min-height:82px;transition:border-color .15s}
+    .gap-input:focus{border-color:var(--blue)}
+    .gap-input.correct{border-color:var(--green);background:#e8fdf0}
+    .gap-input.wrong{border-color:var(--red);background:#ffeaec}
+
+    .gap-wrapper{display:flex;flex-direction:column;align-items:center;gap:4px}
+    .gap-label{font-family:'Inter',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--grey)}
+
+    .feedback{padding:20px 40px;border-radius:14px;font-size:1.35rem;font-weight:700;margin-bottom:28px;max-width:700px;width:100%}
+    .feedback.ok{background:#d4f7e0;color:#065f46;border:3px solid var(--green)}
+    .feedback.bad{background:#ffeaec;color:#991b1b;border:3px solid var(--red)}
+    .feedback.warn{background:#FEF3C7;color:#92400E;border:3px solid #F59E0B}
+    .reveal{font-family:'Crimson Text',serif;font-style:italic;font-size:1.5rem;color:#065f46;margin-top:6px;font-weight:600}
+
+    .btn-check{background:var(--navy);color:#fff;font-size:1.15rem;padding:18px 56px;border-radius:14px}
+    .btn-check:hover:not(:disabled){background:#003580}
+    .btn-next{background:var(--green);color:#fff;font-size:1.15rem;padding:18px 56px;border-radius:14px}
+    .btn-next:hover{background:#00a844}
+
+    /* Results screen */
+    .results-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;background:var(--bg)}
+    .big-score{font-size:9rem;font-weight:900;line-height:1;margin-bottom:16px}
+    .big-score.pass{color:var(--green)}
+    .big-score.fail{color:var(--red)}
+    .big-score.mid{color:var(--gold)}
+    .results-label{font-size:1.6rem;font-weight:800;margin-bottom:8px}
+    .results-sub{font-size:1.15rem;color:var(--grey);margin-bottom:40px}
+    .btn-retry{background:var(--navy);color:#fff;font-size:1.1rem;padding:16px 44px;border-radius:14px;margin-right:14px}
+    .btn-retry:hover{background:#003580}
+
+    /* Verb list (reference view) */
+    .ref-body{flex:1;overflow-y:auto;padding:40px 60px;background:var(--bg)}
+    .ref-table{width:100%;border-collapse:collapse;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,.05)}
+    .ref-table th{background:var(--navy);color:#fff;padding:18px 20px;text-align:left;font-size:.95rem;letter-spacing:.04em}
+    .ref-table td{padding:14px 20px;border-bottom:1px solid var(--lgrey);font-size:1.1rem;font-weight:600}
+    .ref-table td.lat{font-family:'Crimson Text',serif;font-style:italic;font-size:1.3rem;font-weight:700}
+    .ref-table tr:last-child td{border-bottom:none}
+    .ref-table tr:nth-child(even) td{background:#f8f9fc}
+
+    /* Tab nav */
+    .tab-bar{display:flex;gap:0;border-bottom:2.5px solid var(--lgrey);padding:0 60px;background:#fff;flex-shrink:0}
+    .tab{font-size:1rem;font-weight:800;padding:14px 28px;cursor:pointer;color:var(--grey);background:none;border:none;border-bottom:3px solid transparent;margin-bottom:-2.5px;border-radius:0;transition:color .15s}
+    .tab.active{color:var(--navy);border-bottom-color:var(--navy)}
+    .tab:hover:not(.active){color:var(--navy)}
+
+    @media(max-width:700px){
+      .topbar{padding:12px 20px}
+      .drill-bar{padding:16px 20px}
+      .drill-body{padding:3vh 20px 40px}
+      .parts-row{gap:10px}
+      .gap-input,.part-chip{font-size:1.4rem;padding:10px 14px;min-width:90px;min-height:68px}
+      .intro-box{padding:40px 28px}
+      .ref-body{padding:24px 16px}
+    }
+  </style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-title">Principal Parts Platform</div>
+    <div class="topbar-right">
+      <div class="score-chip" id="score-chip" style="display:none">Score: <span id="live-score">0</span></div>
+      <a class="home-btn" href="index.html">&#8962; Home</a>
+    </div>
+  </div>
+
+  <!-- INTRO SCREEN -->
+  <div class="screen active" id="screen-intro">
+    <div class="intro-body">
+      <div class="intro-box">
+        <h2>Principal Parts</h2>
+        <p>Thirteen 1st-conjugation verbs. Each question gives you the English meaning and shows some parts &mdash; fill in the gaps.</p>
+        <p class="note">The four parts: present &middot; infinitive &middot; perfect &middot; past participle</p>
+        <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+          <button class="btn-start" onclick="startDrill()">Start drill</button>
+          <button class="btn-start" style="background:transparent;border:2.5px solid var(--navy);color:var(--navy)" onclick="showRef()">View all verbs</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DRILL SCREEN -->
+  <div class="screen" id="screen-drill">
+    <div class="tab-bar">
+      <button class="tab active" id="tab-drill" onclick="switchTab('drill')">Drill</button>
+      <button class="tab" id="tab-ref" onclick="switchTab('ref')">Reference</button>
+    </div>
+    <div id="drill-view">
+      <div class="drill-bar">
+        <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+        <div class="drill-count" id="drill-count">1 / 13</div>
+      </div>
+      <div class="drill-body" id="drill-body"></div>
+    </div>
+    <div id="ref-view" style="display:none;flex:1;flex-direction:column;overflow:hidden">
+      <div class="ref-body" id="ref-body"></div>
+    </div>
+  </div>
+
+  <!-- RESULTS SCREEN -->
+  <div class="screen" id="screen-results">
+    <div class="results-body">
+      <div id="results-inner"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const VERBS = [
+  {p:"amo",inf:"amare",pf:"amavi",ppp:"amatus",e:"I love"},
+  {p:"clamo",inf:"clamare",pf:"clamavi",ppp:"clamatus",e:"I shout"},
+  {p:"festino",inf:"festinare",pf:"festinavi",ppp:null,e:"I hurry"},
+  {p:"habito",inf:"habitare",pf:"habitavi",ppp:"habitatus",e:"I live"},
+  {p:"impero",inf:"imperare",pf:"imperavi",ppp:"imperatus",e:"I order"},
+  {p:"libero",inf:"liberare",pf:"liberavi",ppp:"liberatus",e:"I free"},
+  {p:"neco",inf:"necare",pf:"necavi",ppp:"necatus",e:"I kill"},
+  {p:"navigo",inf:"navigare",pf:"navigavi",ppp:null,e:"I sail"},
+  {p:"oppugno",inf:"oppugnare",pf:"oppugnavi",ppp:"oppugnatus",e:"I attack"},
+  {p:"oro",inf:"orare",pf:"oravi",ppp:"oratus",e:"I beg"},
+  {p:"puto",inf:"putare",pf:"putavi",ppp:"putatus",e:"I think"},
+  {p:"rogo",inf:"rogare",pf:"rogavi",ppp:"rogatus",e:"I ask"},
+  {p:"appropinquo",inf:"appropinquare",pf:"appropinquavi",ppp:null,e:"I approach"},
+];
+
+const PARTS = [
+  {key:"p",  label:"Present"},
+  {key:"inf",label:"Infinitive"},
+  {key:"pf", label:"Perfect"},
+  {key:"ppp",label:"Past participle"},
+];
+
+let queue = [], qi = 0, correct = 0, gaps = [], checked = false;
+
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function strip(s){return s.trim().toLowerCase().replace(/[^a-z]/g,'');}
+
+function startDrill(){
+  queue = shuffle([...VERBS]);
+  qi = 0; correct = 0; checked = false;
+  document.getElementById('score-chip').style.display='';
+  document.getElementById('live-score').textContent='0';
+  show('screen-drill');
+  document.getElementById('tab-drill').classList.add('active');
+  document.getElementById('tab-ref').classList.remove('active');
+  document.getElementById('drill-view').style.display='';
+  document.getElementById('ref-view').style.display='none';
+  renderQuestion();
+}
+
+function renderQuestion(){
+  if(qi >= queue.length){showResults();return;}
+  checked = false;
+  const v = queue[qi];
+  const pct = (qi/queue.length*100).toFixed(0);
+  document.getElementById('progress-fill').style.width = pct+'%';
+  document.getElementById('drill-count').textContent = (qi+1)+' / '+queue.length;
+
+  // decide which parts are gaps (1 or 2, never the present, never null parts)
+  const eligible = PARTS.filter(p => p.key !== 'p' && v[p.key] !== null).map(p=>p.key);
+  shuffle(eligible);
+  const numGaps = eligible.length >= 2 ? 2 : 1;
+  gaps = eligible.slice(0, numGaps);
+
+  let html = `<div class="meaning-tag">${v.e}</div>`;
+  html += `<div class="parts-row" id="parts-row">`;
+  PARTS.forEach((pt, i) => {
+    if(v[pt.key] === null) return; // skip null PPP
+    if(i > 0) html += `<span class="part-sep">&middot;</span>`;
+    if(gaps.includes(pt.key)){
+      html += `<div class="gap-wrapper">
+        <span class="gap-label">${pt.label}</span>
+        <input class="gap-input" id="gap-${pt.key}" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="..." />
+      </div>`;
+    } else {
+      html += `<div class="part-chip"><span class="chip-label">${pt.label}</span>${v[pt.key]}</div>`;
+    }
+  });
+  html += `</div>`;
+  html += `<div id="feedback-area"></div>`;
+  html += `<button class="btn-check" id="btn-action" onclick="checkAnswer()">Check</button>`;
+
+  document.getElementById('drill-body').innerHTML = html;
+
+  // focus first gap
+  const first = document.getElementById('gap-'+gaps[0]);
+  if(first) setTimeout(()=>first.focus(),50);
+
+  // enter key
+  document.onkeydown = e => {
+    if(e.key==='Enter'){
+      const btn = document.getElementById('btn-action');
+      if(btn) btn.click();
+    }
+  };
+}
+
+function checkAnswer(){
+  if(checked) return;
+  checked = true;
+  const v = queue[qi];
+  let allCorrect = true;
+
+  gaps.forEach(key => {
+    const input = document.getElementById('gap-'+key);
+    if(!input) return;
+    const given = strip(input.value);
+    const expected = strip(v[key]);
+    const ok = given === expected;
+    input.classList.add(ok ? 'correct' : 'wrong');
+    if(!ok) allCorrect = false;
+  });
+
+  const fb = document.getElementById('feedback-area');
+  if(allCorrect){
+    correct++;
+    document.getElementById('live-score').textContent = correct;
+    fb.innerHTML = `<div class="feedback ok">&#10003; Correct!</div>`;
+  } else {
+    const reveal = gaps.map(k=>`<span>${PARTS.find(p=>p.key===k).label}: <em>${v[k]}</em></span>`).join(' &middot; ');
+    fb.innerHTML = `<div class="feedback bad">&#10007; Not quite &mdash; <span class="reveal">${reveal}</span></div>`;
+  }
+
+  const btn = document.getElementById('btn-action');
+  btn.textContent = qi+1 < queue.length ? 'Next' : 'Finish';
+  btn.className = 'btn-next';
+  btn.onclick = nextQuestion;
+}
+
+function nextQuestion(){
+  qi++;
+  renderQuestion();
+}
+
+function showResults(){
+  show('screen-results');
+  document.getElementById('score-chip').style.display='none';
+  const pct = Math.round(correct/queue.length*100);
+  const cls = pct>=80?'pass':pct>=50?'mid':'fail';
+  const msg = pct>=80 ? 'Excellent.' : pct>=50 ? 'Good effort.' : 'Keep practising.';
+  document.getElementById('results-inner').innerHTML = `
+    <div style="text-align:center">
+      <div class="big-score ${cls}">${pct}%</div>
+      <div class="results-label">${correct} / ${queue.length} correct</div>
+      <div class="results-sub">${msg}</div>
+      <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+        <button class="btn-retry" onclick="startDrill()">Drill again</button>
+        <button class="btn-retry" style="background:transparent;border:2.5px solid var(--navy);color:var(--navy)" onclick="showRef()">View verbs</button>
+        <a href="index.html" style="display:inline-flex;align-items:center;padding:16px 28px;border:2.5px solid var(--lgrey);border-radius:14px;font-weight:700;font-size:1rem;color:var(--grey);text-decoration:none;">&#8962; Home</a>
+      </div>
+    </div>`;
+}
+
+function showRef(){
+  show('screen-drill');
+  document.getElementById('tab-drill').classList.remove('active');
+  document.getElementById('tab-ref').classList.add('active');
+  document.getElementById('drill-view').style.display='none';
+  const rv = document.getElementById('ref-view');
+  rv.style.display='flex';
+  document.getElementById('score-chip').style.display='none';
+  let rows = VERBS.map(v=>`<tr>
+    <td class="lat">${v.p}</td>
+    <td class="lat">${v.inf}</td>
+    <td class="lat">${v.pf}</td>
+    <td class="lat">${v.ppp||'&mdash;'}</td>
+    <td>${v.e}</td>
+  </tr>`).join('');
+  document.getElementById('ref-body').innerHTML = `
+    <table class="ref-table">
+      <thead><tr><th>Present</th><th>Infinitive</th><th>Perfect</th><th>PPP</th><th>Meaning</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+function switchTab(tab){
+  if(tab==='drill'){
+    document.getElementById('tab-drill').classList.add('active');
+    document.getElementById('tab-ref').classList.remove('active');
+    document.getElementById('drill-view').style.display='';
+    document.getElementById('ref-view').style.display='none';
+  } else {
+    showRef();
+  }
+}
+
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+</script>
+</body>
+</html>
