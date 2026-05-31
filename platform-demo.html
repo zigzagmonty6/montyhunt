@@ -722,7 +722,7 @@
   }
 
   function TeacherDashboard({onLogout,onStart,children}){
-    const [tab,setTab]=useState('homework');
+    const [tab,setTab]=useState('preview');
     const [sets,setSets]=useState([]);
     const [overview,setOverview]=useState([]);
     const [weak,setWeak]=useState([]);
@@ -785,8 +785,7 @@
           </div>
         </div>
         <div className="t-dash anim-fade">
-          <div className="t-nav">
-            {tabs.map(t=><div key={t.key} className={`t-tab ${tab===t.key?'active':''}`} onClick={()=>setTab(t.key)}>{t.label}</div>)}
+          )}
             {selPupil&&<div className={`t-tab ${tab==='pupil'?'active':''}`} onClick={()=>setTab('pupil')}>{selPupil.first_name}</div>}
           </div>
           <div className="t-content">
