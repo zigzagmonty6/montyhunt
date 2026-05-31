@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Labyrinth â€” Monty Hunt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{ --ground:#114E84;--ground2:#0C3A66;--ink:#EAF1F8;--soft:#A9C6E0;--gold:#D9B25A;--gold-hi:#F0D588; }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;}
+  body{font-family:'EB Garamond',serif;color:var(--ink);overflow:hidden;
+    background:radial-gradient(130% 120% at 50% 8%, var(--ground) 0%, var(--ground2) 100%);
+    display:flex;align-items:center;justify-content:center;text-align:center;}
+  body::after{content:'';position:fixed;inset:0;pointer-events:none;mix-blend-mode:multiply;opacity:.45;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");}
+
+  .home{position:fixed;top:26px;left:26px;z-index:20;display:inline-flex;align-items:center;gap:9px;
+    font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--ink);text-decoration:none;padding:10px 16px;border:1.5px solid var(--gold);
+    background:rgba(0,0,0,.2);transition:background .25s,color .25s;}
+  .home:hover{background:var(--gold);color:var(--ground2);}
+  .home span{font-size:14px;}
+
+  .center{position:relative;padding:40px;max-width:680px;}
+  .maze{margin:0 auto 30px;display:block;}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.36em;text-transform:uppercase;color:var(--gold-hi);}
+  h1{font-family:'Cinzel',serif;font-weight:800;font-size:54px;letter-spacing:.08em;margin:14px 0 16px;}
+  .rule{width:74px;height:3px;background:var(--gold);margin:0 auto 26px;}
+  .note{font-size:19px;line-height:1.6;color:var(--soft);max-width:46ch;margin:0 auto 34px;text-wrap:pretty;}
+  .launch{display:inline-flex;align-items:center;gap:12px;font-family:'IBM Plex Mono',monospace;
+    font-size:14px;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;
+    color:var(--ground2);background:var(--gold-hi);padding:16px 30px;border:1.5px solid var(--gold);
+    transition:transform .2s ease, box-shadow .2s ease;box-shadow:0 12px 30px -14px rgba(0,0,0,.6);}
+  .launch:hover{transform:translateY(-3px);box-shadow:0 20px 40px -16px rgba(0,0,0,.6);}
+  .edit{margin-top:26px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;color:var(--soft);opacity:.7;}
+
+  .fade{position:fixed;inset:0;z-index:50;background:var(--ground);pointer-events:none;animation:rev .7s ease forwards;}
+  @keyframes rev{to{opacity:0;}}
+</style>
+</head>
+<body>
+  <a class="home" href="index.html"><span>âŒ‚</span> Home</a>
+  <div class="center">
+    <svg class="maze" width="84" height="84" viewBox="0 0 84 84" fill="none" stroke="#D9B25A" stroke-width="3">
+      <rect x="6" y="6" width="72" height="72"/>
+      <rect x="18" y="18" width="48" height="48"/>
+      <rect x="30" y="30" width="24" height="24"/>
+      <path d="M42 6 V18 M66 42 H54 M42 78 V66 M18 42 H30" stroke-width="3"/>
+    </svg>
+    <div class="eyebrow">EdTech</div>
+    <h1>Labyrinth</h1>
+    <div class="rule"></div>
+    <p class="note">A mastery-based Latin platform â€” live in two London schools. Launch a copy of the app to take a look.</p>
+    <a class="launch" id="launch" href="#" target="_blank" rel="noopener">â–¶ Launch the platform</a>
+    <div class="edit">// point the button at your app URL in edtech.html</div>
+  </div>
+  <div class="fade"></div>
+</body>
+</html>
+

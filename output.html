@@ -1,0 +1,76 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Monty Hunt â€” Output</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{ --ground:#B98113; --ground2:#946109; --ink:#2A1E08; --cream:#F6EED6; --gold:#5E3F08; --line:#7A560E; }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{min-height:100%;}
+  html{background:var(--ground2);}
+  body{font-family:'EB Garamond',serif;color:var(--ink);overflow-x:hidden;min-height:100vh;
+    background:radial-gradient(130% 110% at 50% 0%, var(--ground) 0%, var(--ground2) 100%);}
+  body::after{content:'';position:fixed;inset:0;pointer-events:none;mix-blend-mode:multiply;opacity:.45;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");}
+
+  .home{position:fixed;top:26px;left:26px;z-index:20;display:inline-flex;align-items:center;gap:9px;
+    font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--ink);text-decoration:none;padding:10px 16px;border:1.5px solid var(--gold);
+    background:rgba(255,255,255,.22);transition:background .25s,color .25s;}
+  .home:hover{background:var(--gold);color:var(--cream);}
+  .home span{font-size:14px;}
+
+  .wrap{max-width:900px;margin:0 auto;padding:128px 40px 90px;}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.36em;text-transform:uppercase;color:var(--gold);}
+  h1{font-family:'Cinzel',serif;font-weight:800;font-size:56px;letter-spacing:.06em;margin:14px 0 6px;}
+  .lede{font-style:italic;font-size:21px;color:var(--gold);margin-bottom:14px;}
+  .rule{width:74px;height:3px;background:var(--gold);margin:0 0 36px;}
+
+  .links{display:grid;gap:16px;}
+  a.card{display:flex;align-items:center;gap:20px;text-decoration:none;color:var(--ink);
+    background:var(--cream);border:1.5px solid var(--line);padding:22px 26px;
+    transition:transform .2s ease, box-shadow .2s ease;box-shadow:0 10px 26px -16px rgba(0,0,0,.5);}
+  a.card:hover{transform:translateY(-3px);box-shadow:0 18px 36px -16px rgba(0,0,0,.55);}
+  a.card .n{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--line);min-width:32px;}
+  a.card .t{font-family:'Cinzel',serif;font-weight:700;font-size:24px;letter-spacing:.02em;}
+  a.card .d{font-size:17px;color:#5A4412;}
+  a.card .arr{margin-left:auto;font-size:22px;color:var(--line);transition:transform .2s ease;}
+  a.card:hover .arr{transform:translateX(5px);}
+  .col{display:flex;flex-direction:column;gap:3px;}
+  .edit{margin-top:30px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;color:#5A4412;opacity:.8;}
+
+  .fade{position:fixed;inset:0;z-index:50;background:var(--ground);pointer-events:none;animation:rev .7s ease forwards;}
+  @keyframes rev{to{opacity:0;}}
+</style>
+</head>
+<body>
+  <a class="home" href="index.html"><span>âŒ‚</span> Home</a>
+  <div class="wrap">
+    <div class="eyebrow">Output</div>
+    <h1>Output</h1>
+    <div class="lede">Things I've made and am making.</div>
+    <div class="rule"></div>
+    <div class="links">
+      <a class="card" href="https://www.youtube.com/watch?v=ySbYijUCqIU" target="_blank" rel="noopener"><span class="n">01</span><span class="col"><span class="t">VR Troy</span><span class="d">Walk the walls of Homer's city â€” a virtual reconstruction.</span></span>
+        <span class="arr">â†—</span>
+      </a>
+      <a class="card" href="edtech.html" target="_blank" rel="noopener"><span class="n">02</span>
+        <span class="col"><span class="t">Labyrinth</span><span class="d">The Latin platform â€” live in two London schools.</span></span>
+        <span class="arr">â†—</span>
+      </a>
+      <a class="card" href="files/Monty-Hunt-CV.pdf" target="_blank" rel="noopener"><span class="n">03</span>
+        <span class="col"><span class="t">Montagu Butler Prize</span><span class="d">Award-winning Latin verse composition.</span></span>
+        <span class="arr">â†—</span>
+      </a>
+    </div>
+    <div class="edit">// edit links &amp; add more in output.html</div>
+  </div>
+  <div class="fade"></div>
+</body>
+</html>
+
+

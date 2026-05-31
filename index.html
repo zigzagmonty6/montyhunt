@@ -3,437 +3,115 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Monty Hunt — Making Classics Click</title>
+  <title>Monty Hunt — The House</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Oswald:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root{
+      --mat:#0E3FBE; --mat-deep:#0A2E8C; --mat-line:rgba(255,255,255,0.18); --mat-line2:rgba(255,255,255,0.30);
+      --hud:#CFE0FF; --hud-bright:#FFFFFF;
+      --paper:#F3EFE3; --ink:#23221B; --ink-soft:#6C6D60;
+      --mono:'IBM Plex Mono',ui-monospace,monospace;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    html,body{height:100%;}
+    body{
+      font-family:var(--mono);overflow:hidden;
+      background:
+        radial-gradient(130% 120% at 50% 42%, var(--mat) 0%, var(--mat) 46%, var(--mat-deep) 100%);
+      display:flex;align-items:center;justify-content:center;
+    }
+    /* blueprint grid + heavier rule */
+    .mat{position:fixed;inset:0;z-index:0;pointer-events:none;
+      background-image:
+        linear-gradient(var(--mat-line) 1px,transparent 1px),
+        linear-gradient(90deg,var(--mat-line) 1px,transparent 1px),
+        linear-gradient(var(--mat-line2) 1.4px,transparent 1.4px),
+        linear-gradient(90deg,var(--mat-line2) 1.4px,transparent 1.4px);
+      background-size:38px 38px,38px 38px,190px 190px,190px 190px;
+      background-position:center;}
+    .mat::after{content:'';position:absolute;inset:0;
+      background:radial-gradient(120% 120% at 50% 40%,transparent 60%,rgba(5,20,70,0.45) 100%);}
+
+    /* HUD on the mat */
+    .hud{position:fixed;inset:0;z-index:30;pointer-events:none;font-family:var(--mono);color:var(--hud);}
+    .hud .br{position:absolute;width:26px;height:26px;border:1.5px solid rgba(255,255,255,0.55);}
+    .hud .tl{top:20px;left:20px;border-right:0;border-bottom:0;}
+    .hud .tr{top:20px;right:20px;border-left:0;border-bottom:0;}
+    .hud .bl{bottom:20px;left:20px;border-right:0;border-top:0;}
+    .hud .brc{bottom:20px;right:20px;border-left:0;border-top:0;}
+    .hud .t{position:absolute;font-size:11px;letter-spacing:.2em;text-transform:uppercase;}
+    .hud .h-tl{top:24px;left:58px;} .hud .h-tr{top:24px;right:58px;text-align:right;}
+    .hud .h-bl{bottom:24px;left:58px;} .hud .h-br{bottom:24px;right:58px;text-align:right;}
+    .hud b{color:var(--hud-bright);font-weight:600;}
+    .hud .status{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);font-size:12px;letter-spacing:.16em;}
+    .hud .status .pf{opacity:.6;} .hud .status #cmd{color:#FFE16B;font-weight:600;}
+    .hud a{color:var(--hud);text-decoration:none;pointer-events:auto;}
+    .hud a:hover{color:var(--hud-bright);}
+
+    /* the paper */
+    .stage{position:relative;z-index:10;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;}
+    .paper{position:relative;width:min(93vw, calc(91vh * 1.538));aspect-ratio:1600 / 1040;
+      background:radial-gradient(135% 130% at 50% 0%, #FAF6EB 0%, var(--paper) 55%, #E8E3D4 100%);
+      transform:none;
+      filter:drop-shadow(0 30px 46px rgba(6,18,60,0.5)) drop-shadow(0 10px 18px rgba(6,18,60,0.32));
+      opacity:0;animation:land .8s cubic-bezier(.18,.9,.24,1.02) .15s forwards;}
+    @keyframes land{
+      0%{opacity:0;transform:translateY(-46px) scale(1.035);}
+      70%{opacity:1;transform:translateY(5px) scale(.997);}
+      100%{opacity:1;transform:translateY(0) scale(1);}}
+    .paper::after{content:'';position:absolute;inset:0;pointer-events:none;mix-blend-mode:multiply;opacity:.5;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");}
+    .paper svg{position:absolute;inset:0;width:100%;height:100%;display:block;}
+
+    /* edge smudges */
+    .smudge{position:absolute;pointer-events:none;mix-blend-mode:multiply;border-radius:50%;opacity:0;
+      transition:opacity 1s ease;}
+    .sm1{width:120px;height:60px;left:-10px;top:32%;background:radial-gradient(ellipse,rgba(70,60,40,.13),transparent 70%);transform:rotate(-18deg);}
+    .sm2{width:150px;height:70px;right:4%;bottom:-12px;background:radial-gradient(ellipse,rgba(70,60,40,.11),transparent 70%);}
+    .sm3{width:90px;height:90px;right:-8px;top:24%;background:radial-gradient(circle,rgba(80,70,45,.12),transparent 68%);}
+    .sm4{width:70px;height:70px;left:18%;bottom:-6px;background:radial-gradient(circle,rgba(80,70,45,.10),transparent 68%);}
+
+    /* corner tape */
+    .tape{position:absolute;width:118px;height:38px;background:rgba(212,200,150,0.42);
+      box-shadow:0 2px 6px rgba(6,18,60,.18);opacity:0;
+      border-left:1px solid rgba(255,255,255,.25);border-right:1px solid rgba(255,255,255,.25);}
+    .tape::after{content:'';position:absolute;inset:0;mix-blend-mode:multiply;opacity:.5;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='40'%3E%3Cfilter id='t'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='2'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='80' height='40' filter='url(%23t)' opacity='0.12'/%3E%3C/svg%3E");}
+    .tp1{top:-14px;left:-30px;transform:rotate(-42deg);}
+    .tp2{top:-14px;right:-30px;transform:rotate(42deg);}
+    .tp3{bottom:-14px;left:-30px;transform:rotate(42deg);}
+    .tp4{bottom:-14px;right:-30px;transform:rotate(-42deg);}
+    .taped .tape{animation:tapeOn .35s ease forwards;}
+    .taped .tp1{animation-delay:.0s;} .taped .tp2{animation-delay:.08s;}
+    .taped .tp3{animation-delay:.16s;} .taped .tp4{animation-delay:.24s;}
+    @keyframes tapeOn{0%{opacity:0;transform:scale(1.25) var(--rot);}100%{opacity:1;}}
+    /* enter-room fade */
+    #enter-fade{position:fixed;inset:0;z-index:60;background:#9C2A22;opacity:0;pointer-events:none;
+      transition:opacity .48s ease;}
+  </style>
 </head>
 <body>
+  <div class="mat"></div>
+  <div class="hud">
+    <span class="br tl"></span><span class="br tr"></span><span class="br bl"></span><span class="br brc"></span>
+    <div class="t h-tl">DRWG <b>No.01</b> · THE HOUSE</div>
+    <div class="t h-tr">51.4613°N <b>·</b> 0.1156°W</div>
+    <div class="t h-bl">SCALE <b>1:50</b> · PLOTTED 2026</div>
+    <div class="t h-br"><a href="mailto:montymaximilianhunt@gmail.com">montymaximilianhunt@gmail.com</a></div>
+    <div class="status">&gt; <span class="pf">~/the-house</span> $ <span id="cmd">ls</span></div>
+  </div>
 
-  <!-- NAV -->
-  <nav id="site-nav">
-    <div class="nav-inner">
-      <a class="nav-brand" href="#hero">M·H</a>
-      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu">&#9776;</button>
-      <ul class="nav-links" id="nav-links">
-        <li><a href="#manifesto">Manifesto</a></li>
-        <li><a href="#platform">Labyrinth</a></li>
-        <li><a href="#projects">Projects</a></li>
-        <li><a href="#archaeology">Archaeology</a></li>
-        <li><a href="#garden">Garden</a></li>
-        <li><a href="#resources">Resources</a></li>
-        <li><a href="#now">Now</a></li>
-        <li><a href="#cv">CV</a></li>
-        <li><a href="#application">Application</a></li>
-        <li><a href="#contact">Contact</a></li>
-      </ul>
+  <div class="stage">
+    <div class="paper" id="paper">
+      <span class="smudge sm1"></span><span class="smudge sm2"></span><span class="smudge sm3"></span><span class="smudge sm4"></span>
+      <div id="plan"></div>
+      <span class="tape tp1"></span><span class="tape tp2"></span><span class="tape tp3"></span><span class="tape tp4"></span>
     </div>
-  </nav>
+  </div>
+  <div id="enter-fade"></div>
 
-  <!-- HERO -->
-  <section id="hero">
-    <div class="frieze-band top-frieze"></div>
-    <div class="hero-inner">
-      <div class="hero-text">
-        <p class="hero-label">CAMBRIDGE · BRIXTON · LONDON</p>
-        <h1 class="hero-name">Monty Hunt</h1>
-        <p class="hero-tagline">Making Classics click.</p>
-        <p class="hero-sub">Cambridge Classicist. Latin teacher. EdTech builder.</p>
-        <div class="hero-links">
-          <a class="btn btn-primary" href="#platform">The Platform</a>
-          <a class="btn btn-secondary" href="cv.pdf" target="_blank">CV</a>
-          <a class="btn btn-ghost" href="https://linkedin.com/in/montyhunt" target="_blank">LinkedIn</a>
-          <a class="btn btn-ghost" href="https://github.com/montyhunt" target="_blank">GitHub</a>
-        </div>
-      </div>
-      <div class="hero-ornament">
-        <div class="fresco-panel hero-fresco">
-          <div class="fresco-inner"></div>
-        </div>
-      </div>
-    </div>
-    <div class="frieze-band bottom-frieze"></div>
-  </section>
-
-  <!-- MANIFESTO -->
-  <section id="manifesto" class="section-red">
-    <div class="frieze-band"></div>
-    <div class="container">
-      <div class="wall-panel">
-        <h2 class="section-heading light">Manifesto</h2>
-        <div class="manifesto-body">
-          <p>Latin is taught in about 3% of English state schools. That is not because the other 97% couldn't do it. It is because the way Latin has always been taught assumes a particular kind of pupil — in a particular kind of school, with a particular kind of background.</p>
-          <p>I teach Latin in Brixton. 27.6% of my pupils achieve grade 5 in English and Maths at GCSE. 55.7% speak English as an additional language. Latin is compulsory throughout KS3. My pupils are doing it — and the ones who struggle everywhere else are sometimes the ones who flourish here most.</p>
-          <p class="manifesto-kicker">The subject is not the problem. The pedagogy is.</p>
-        </div>
-      </div>
-    </div>
-    <div class="frieze-band"></div>
-  </section>
-
-  <!-- THE PLATFORM -->
-  <section id="platform" class="section-parchment">
-    <div class="container">
-      <div class="wall-panel">
-        <p class="section-label">EdTech</p>
-        <h2 class="section-heading">Labyrinth</h2>
-        <p class="section-sub">A mastery-based Latin learning platform — built from scratch, deployed in two London state schools.</p>
-
-        <div class="platform-body">
-          <p>Currently live at <strong>Trinity Academy, Brixton</strong> and the <strong>West London Free School</strong> — the Sunday Times UK Comprehensive School of the Year 2026. Spaced-repetition flashcards with Easy/Hard sorting. Timed multiple-choice questions. A written translation mode that accepts the full range of valid renderings for any Latin sentence — handling typos, alternative word orders, and genuine linguistic variation.</p>
-          <p>The teacher portal shows live analytics: a leaderboard, time spent per exercise, and a breakdown of the most commonly missed verb forms across the cohort.</p>
-          <p>The hardest problem was automating translation marking. Any Latin sentence has dozens of valid English renderings. No existing platform had solved this. I worked iteratively with AI to curate valid translations for each sentence and built the marking scheme from that output.</p>
-          <p>Currently in discussion for expansion within <strong>Future Academies</strong> and across its eleven schools.</p>
-        </div>
-
-        <div class="platform-actions">
-          <a class="btn btn-primary" href="#" target="_blank">Try it — Demo</a>
-          <a class="btn btn-secondary" href="#" target="_blank">Teacher Portal Demo</a>
-        </div>
-
-        <div class="screenshots-grid">
-          <div class="screenshot-placeholder">
-            <span>Pupil View</span>
-          </div>
-          <div class="screenshot-placeholder">
-            <span>Teacher Analytics</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- PROJECTS -->
-  <section id="projects" class="section-red">
-    <div class="frieze-band"></div>
-    <div class="container">
-      <h2 class="section-heading light centre">Projects</h2>
-
-      <!-- VR Troy -->
-      <div class="wall-panel project-panel">
-        <p class="section-label light">Art &amp; Technology</p>
-        <h3 class="project-heading light">The Future of Mythology</h3>
-        <p class="project-sub light">VR Troy</p>
-        <div class="project-body light-text">
-          <p>For my A-level Art Personal Investigation, I built Ancient Troy from scratch in Minecraft — 60 hours, street by street, using Schliemann's 19th-century archaeological maps as my blueprint. I then rebuilt it in SketchUp as a cyberpunk metropolis and rendered it as a 360° virtual reality experience: the ancient city walls visible in the distance as you walk through neon-lit streets.</p>
-          <p><em>A* — highest mark in my school cohort.</em></p>
-        </div>
-        <div class="video-embed">
-          <iframe
-            src="https://www.youtube.com/embed/ySbYijUCqIU"
-            title="VR Troy"
-            frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen
-          ></iframe>
-        </div>
-      </div>
-
-      <!-- Photography -->
-      <div class="wall-panel project-panel">
-        <p class="section-label light">Photography</p>
-        <h3 class="project-heading light">Sovereign Art Prize · Royal Academy</h3>
-        <div class="project-body light-text">
-          <p>Experimental photography made during the VR Troy project — lockdown street photography in the cyberpunk style of Liam Wong. Appeared in the Royal Academy's Young Artists online show. Sovereign Art Prize finalist. A print sold at Phillips Auction House.</p>
-          <p><em>Submitted by my teacher without telling me.</em></p>
-          <a class="btn btn-ghost-light" href="https://www.phillips.com/article/87593481/phillips-the-sovereign-art-foundation-students-prize" target="_blank">Phillips Auction House →</a>
-        </div>
-      </div>
-
-      <!-- Latin Verse -->
-      <div class="wall-panel project-panel verse-panel">
-        <p class="section-label light">Cambridge, 2025</p>
-        <h3 class="project-heading light">Montagu Butler Prize for Latin Verse Composition</h3>
-        <div class="project-body light-text">
-          <p>The Montagu Butler Prize is Cambridge's award for the most distinguished original Latin verse composition. Some years the committee declines to award it at all. I won it — alongside the Faculty Latin Prose Composition Prize — in the same term as my finals. The committee described the submission as <em>prodigal</em>.</p>
-        </div>
-
-        <div class="poem-container">
-          <div class="poem-header">
-            <h4 class="poem-title">De Bello Britannico</h4>
-            <p class="poem-subtitle">On the British War · 150 hexameter lines</p>
-          </div>
-          <div class="poem-description">
-            <p>Caesar quotes Churchill's wartime speeches and sings a Latinised Rule Britannia. The British summer is rendered as fish and chips, British Bulldog, and Chariots of Fire. The poem ends with an aetiology of the Union Jack. A metrical and stylistic commentary accompanies the text.</p>
-          </div>
-          <div class="poem-text" id="poem-text">
-            <div class="poem-lines">
-              <!-- Poem will be rendered here — placeholder for now -->
-              <p class="poem-placeholder-note"><em>Full text below — scroll to read</em></p>
-              <div id="poem-content">
-                <!-- Poem lines inserted by JS or manually -->
-              </div>
-            </div>
-          </div>
-          <button class="btn btn-ghost-light poem-toggle" id="poem-toggle">Read the poem ↓</button>
-        </div>
-      </div>
-
-      <!-- Latin Prose -->
-      <div class="wall-panel project-panel">
-        <p class="section-label light">Cambridge, 2025</p>
-        <h3 class="project-heading light">Faculty Latin Prose Composition Prize</h3>
-        <div class="project-body light-text">
-          <p>Faculty prize for the most distinguished Latin prose composition of the year — awarded in the same term as the Verse Prize and Finals.</p>
-        </div>
-      </div>
-
-      <!-- Dissertation -->
-      <div class="wall-panel project-panel">
-        <p class="section-label light">Cambridge Dissertation · First Class (74)</p>
-        <h3 class="project-heading light">Antiquity's Muscles in Modern Media</h3>
-        <p class="project-sub light">Female Physical Culture Through a Classical Lens</p>
-        <div class="project-body light-text">
-          <p>Supervised by Professor Carrie Vout, Christ's College, Cambridge. Examines the classicising rhetoric applied to female athletic bodies throughout history — from ancient statuary to modern fitness culture.</p>
-          <p><em>Professor Vout has expressed interest in working toward publication.</em></p>
-        </div>
-      </div>
-
-    </div>
-    <div class="frieze-band"></div>
-  </section>
-
-  <!-- ARCHAEOLOGY -->
-  <section id="archaeology" class="section-parchment">
-    <div class="container">
-      <div class="wall-panel archaeology-panel">
-        <p class="section-label">Fieldwork · Italy</p>
-        <h2 class="section-heading">Interamna Lirenas</h2>
-        <div class="archaeology-body">
-          <p>Three summers of archaeological fieldwork at Interamna Lirenas, an ancient Roman town in the Liri Valley, Italy, under Dr Alessandro Launaro (Cambridge). Trench supervisor across multiple seasons.</p>
-          <p>In my final season, I was assigned to excavate what the team thought was a disused well — as punishment for digging too aggressively the day before. It turned out to be a coin hoard: the first ever discovered at the site, dating to the reign of Claudius Gothicus (third century AD). I was put in charge of it.</p>
-        </div>
-        <a class="btn btn-primary" href="https://www.bbc.co.uk/news/uk-england-cambridgeshire-67684235" target="_blank">BBC Article →</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- DIGITAL GARDEN -->
-  <section id="garden" class="section-verde">
-    <div class="frieze-band"></div>
-    <div class="container">
-      <h2 class="section-heading light centre">Garden</h2>
-      <p class="garden-intro light-text">A growing collection of notes, half-formed ideas, and things I'm thinking about. Updated irregularly.</p>
-
-      <div class="garden-grid">
-        <div class="wall-panel garden-note">
-          <p class="section-label light">Seed</p>
-          <h3 class="garden-heading light">The vocabulary architecture problem</h3>
-          <div class="garden-body light-text">
-            <p>Latin vocabulary is almost universally taught in dictionary order — alphabetically, or by the sequence they happen to appear in a textbook. No second language acquisition research supports this. Thomas Tinkham's foundational work demonstrated that thematic vocabulary clusters produce measurably better retention than semantic-field grouping.</p>
-            <p>The Dickinson College Commentaries core list of 1,000 high-frequency Latin lemmas represents the field's best frequency data — yet it is typically presented alphabetically in the classroom.</p>
-            <p>The question I keep returning to: if we organised Latin vocabulary the way acquisition research actually recommends — by frequency, by thematic scenario, by semantic network — what would that look like? And who would it serve that the current system doesn't? <em>Labyrinth</em> is my attempt at an answer.</p>
-          </div>
-        </div>
-
-        <div class="wall-panel garden-note">
-          <p class="section-label light">Seed</p>
-          <h3 class="garden-heading light">A second brain for a second language</h3>
-          <div class="garden-body light-text">
-            <p>The analogy I keep reaching for: a student's encounters with Latin vocabulary should accumulate into something — a connected map, a personal knowledge graph, a second brain for a second language. Not a list to be memorised and forgotten.</p>
-            <p>The words of a language are a network, not a sequence. Latin, of all languages, makes this visible: the word <em>amor</em> radiates outward to <em>amare</em>, to <em>amicus</em>, to <em>inimicus</em>, to <em>amabilis</em>, to <em>amans</em>. Those connections are not incidental — they are the language. Teaching them as isolated items is not just inefficient. It is a category error.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="frieze-band"></div>
-  </section>
-
-  <!-- RESOURCES -->
-  <section id="resources" class="section-parchment">
-    <div class="container">
-      <h2 class="section-heading centre">Resources</h2>
-      <p class="resources-intro">Free to use and download.</p>
-      <div class="resources-list">
-        <div class="resource-item">
-          <div class="resource-text">
-            <h3 class="resource-title">A-level Latin Scansion Guide</h3>
-            <p>A guide to Latin metre and scansion for A-level pupils.</p>
-          </div>
-          <a class="btn btn-secondary" href="scansion-guide.pdf" target="_blank">Download PDF</a>
-        </div>
-        <div class="resource-item">
-          <div class="resource-text">
-            <h3 class="resource-title">OCR A-level History: Viking Age Revision Booklets</h3>
-            <p>Comprehensive revision materials for the Viking Age unit of OCR A-level History. Still in use at the West London Free School.</p>
-          </div>
-          <a class="btn btn-secondary" href="viking-age-revision.pdf" target="_blank">Download PDF</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- NOW -->
-  <section id="now" class="section-red">
-    <div class="frieze-band"></div>
-    <div class="container">
-      <div class="wall-panel now-panel">
-        <p class="section-label light">Updated June 2026</p>
-        <h2 class="section-heading light">Now</h2>
-        <div class="now-body light-text">
-          <p>Finishing my PGCE at Future Teacher Training. Main placement: Trinity Academy, Brixton. I teach Latin to Years 7–10 and have spent the year piloting Labyrinth with my Year 10 classes.</p>
-          <p>Submitted for the Open University's MA in Classical Studies — Leventis Schoolteacher Studentship.</p>
-          <p>Applied for the EF Bridge Residency, San Francisco (August 2026).</p>
-          <p>Appointed OCR GCSE Latin Examiner for the 2026 series.</p>
-          <p>Building Labyrinth's ab initio module — a version designed for pupils encountering Latin for the first time.</p>
-          <p>Cycling two hours a day. Working toward a triathlon.</p>
-        </div>
-      </div>
-    </div>
-    <div class="frieze-band"></div>
-  </section>
-
-  <!-- CV -->
-  <section id="cv" class="section-parchment">
-    <div class="container">
-      <h2 class="section-heading centre">CV</h2>
-      <a class="btn btn-primary cv-download" href="cv.pdf" target="_blank">Download Full CV (PDF)</a>
-
-      <div class="cv-grid">
-        <div class="wall-panel cv-panel">
-          <h3 class="cv-section-title">Education</h3>
-          <div class="cv-entry">
-            <p class="cv-role">PGCE · QTS</p>
-            <p class="cv-org">University of Sussex / Future Teacher Training</p>
-            <p class="cv-date">Expected July 2026</p>
-          </div>
-          <div class="cv-entry">
-            <p class="cv-role">BA Classics — 2:1</p>
-            <p class="cv-org">Christ's College, Cambridge</p>
-            <p class="cv-date">2022–2025</p>
-            <p class="cv-detail">Dissertation: First (74) · supervised by Prof. Carrie Vout</p>
-            <p class="cv-detail-italic">Antiquity's Muscles in Modern Media: Female Physical Culture Through a Classical Lens</p>
-          </div>
-          <div class="cv-entry">
-            <p class="cv-role">A-levels</p>
-            <p class="cv-detail">Latin (A*) · Art (A*) · History (A*) · Mathematics (A*) · EPQ: A* (50/50)</p>
-          </div>
-        </div>
-
-        <div class="wall-panel cv-panel">
-          <h3 class="cv-section-title">Awards</h3>
-          <div class="cv-entry">
-            <p class="cv-role">Montagu Butler Prize for Latin Verse Composition</p>
-            <p class="cv-org">Cambridge, 2025</p>
-          </div>
-          <div class="cv-entry">
-            <p class="cv-role">Faculty Latin Prose Composition Prize</p>
-            <p class="cv-org">Cambridge, 2025</p>
-          </div>
-          <div class="cv-entry">
-            <p class="cv-role">OCR GCSE Latin Examiner</p>
-            <p class="cv-org">2026 series</p>
-          </div>
-        </div>
-
-        <div class="wall-panel cv-panel">
-          <h3 class="cv-section-title">Teaching</h3>
-          <div class="cv-entry">
-            <p class="cv-role">Main Placement</p>
-            <p class="cv-org">Trinity Academy, Brixton</p>
-            <p class="cv-date">Autumn &amp; Summer Terms 2025–26</p>
-          </div>
-          <div class="cv-entry">
-            <p class="cv-role">Second Placement</p>
-            <p class="cv-org">West London Free School, Hammersmith</p>
-            <p class="cv-date">Spring Term 2026</p>
-          </div>
-          <div class="cv-entry">
-            <p class="cv-role">Private Tutor</p>
-            <p class="cv-date">2021–present</p>
-            <p class="cv-detail">Latin KS2–KS5, Mathematics GCSE/A-level, Oxbridge preparation</p>
-          </div>
-        </div>
-
-        <div class="wall-panel cv-panel">
-          <h3 class="cv-section-title">Fieldwork</h3>
-          <div class="cv-entry">
-            <p class="cv-role">Trench Supervisor · Three Seasons</p>
-            <p class="cv-org">Interamna Lirenas, Italy</p>
-            <p class="cv-detail">Under Dr A. Launaro, Cambridge</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- THE APPLICATION -->
-  <section id="application" class="section-red">
-    <div class="frieze-band"></div>
-    <div class="container">
-      <div class="wall-panel application-panel">
-        <p class="section-label light">EF Bridge Residency · San Francisco · August 2026</p>
-        <h2 class="section-heading light">The Application</h2>
-        <p class="application-intro light-text">What I submitted — unedited.</p>
-
-        <div class="application-qa">
-          <div class="qa-item">
-            <h3 class="qa-question light">Most impressive things</h3>
-            <div class="qa-answer light-text">
-              <p>I solo excavated the first coin hoard ever found at an ancient Roman town in Italy. I've done three summers as a trench supervisor at the site and feature in a BBC article about it. While doing fieldwork with a team of archaeologists, I'd been assigned to what the team thought was a disused well, as punishment for digging too aggressively the day before. In the end, that meant I was left to excavate and discovered a series of late imperial coins.</p>
-              <p>I built Ancient Troy from scratch in Minecraft over 60 hours, street by street, using Schliemann's 19th-century archaeological maps, then reimagined it as a cyberpunk city in SketchUp and rendered it as a 360° VR experience. What's more, my experimental photography made during the process was showcased in the Royal Academy's Young Artists show, was a Sovereign Art Prize finalist, and a print sold at Phillips Auction House.</p>
-              <p>I won the Montagu Butler Prize, Cambridge's award for the most distinguished original Latin verse composition, in the same year as I won the Prose Composition Prize and completed my finals. Some years the committee doesn't award it at all. I submitted 150 lines in which Caesar quotes Churchill, sings a Latinised Rule Britannia, and the epic ends with an aetiology of the Union Jack. The committee described it as <em>prodigal</em>.</p>
-              <p>I won a five-year bet with my best friends. Aged fourteen we agreed last to cut their hair wins our £50 prizepot. While that money never materialised, I saved a fortune in haircuts, raised over £1,100 for the Little Princess Trust, donated four 16-inch ponytails turned into wigs for young cancer patients, and had my head shaved live on stage at graduation by my head of sixth form.</p>
-            </div>
-          </div>
-
-          <div class="qa-item">
-            <h3 class="qa-question light">Most risk taken</h3>
-            <div class="qa-answer light-text">
-              <p>While at university I signed up for an assortment of trials and studies. The riskiest was cold-calling a fitness company to ask if I, a man, could join their programme for overweight women. They said yes.</p>
-              <p>Same meal, twice a day, six weeks. A 48-hour food and water fast, shivering on a bike in three jumpers before the final weigh-in. 5.6% body fat. Strongest-ever candidate. Cambridge half marathon in 1:36 right after.</p>
-              <p>The biggest risk was financial: £400 upfront, no profit for success. At the time it was everything in my account. I did it purely for the challenge.</p>
-            </div>
-          </div>
-
-          <div class="qa-item">
-            <h3 class="qa-question light">Most impressive technical project</h3>
-            <div class="qa-answer light-text">
-              <p>For the past year I've taught at a state school in Brixton: 27.6% achieve grade 5 in English and Maths; 55.7% speak English as an additional language. Yet Latin is compulsory throughout KS3. I went into teaching to spend my spare time studying how pupils encounter Latin: where they struggle, what works, what doesn't. Running experiments, piloting updates, building on feedback.</p>
-              <p>The hardest problem was automating translation marking. Any Latin sentence has dozens of valid renderings; no platform I've come across has solved this. Working iteratively with AI, I curated valid translations for each sentence and built the marking scheme. I'm now in discussion for expansion within the school and across the eleven schools of the Future Academies Trust.</p>
-            </div>
-          </div>
-
-          <div class="qa-item">
-            <h3 class="qa-question light">Outside work</h3>
-            <div class="qa-answer light-text">
-              <p>I like to spend my time exercising and learning languages, and where possible melding the two. At the moment I'm building toward a triathlon, two hours on the bike each day, while working through a German course at Imperial. I'm obsessive about audiobooks too, mostly history and classics, which tends to keep the language side going while I move.</p>
-              <p>In the past, to celebrate handing in my university dissertation, I stuck my headphones in and just left. No sleep. My own voice reading the Aeneid, running from sunset to sunrise, until my Strava hit 100km.</p>
-            </div>
-          </div>
-
-          <div class="qa-item">
-            <h3 class="qa-question light">Why Theo Kitsberg is the most impressive person I know</h3>
-            <div class="qa-answer light-text">
-              <p>In a fortuitous turn of events, Theo was assigned to me as my 'college son' at Cambridge. For all that I still jokingly call him 'son' and he calls me 'dad', we quickly became more like brothers.</p>
-              <p>Among our shared interests was AI. Two years ago he was working on mental health applications; I was beginning to think about EdTech. He's since gone from Cambridge Philosophy to MIT's Media Lab to Y Combinator in San Francisco. Beyond the achievements, what impresses me most is his balance of determination and benevolence: he takes risks, but for the right reasons.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="frieze-band"></div>
-  </section>
-
-  <!-- CONTACT -->
-  <section id="contact" class="section-parchment">
-    <div class="container">
-      <div class="contact-inner">
-        <h2 class="section-heading centre">Contact</h2>
-        <a class="contact-email" href="mailto:montymaximilianhunt@gmail.com">montymaximilianhunt@gmail.com</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- FOOTER -->
-  <footer>
-    <div class="frieze-band"></div>
-    <div class="footer-inner">
-      <p class="footer-text">Monty Hunt · MMXXVI</p>
-    </div>
-  </footer>
-
-  <script src="script.js"></script>
+  <script src="plan.js"></script>
 </body>
 </html>
