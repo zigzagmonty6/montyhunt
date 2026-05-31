@@ -1,5 +1,5 @@
-/* ============================================================
-   THE HOUSE — Monty Hunt, as a hand-inked Roman villa plan that
+﻿/* ============================================================
+   THE HOUSE â€” Monty Hunt, as a hand-inked Roman villa plan that
    plots itself onto a blueprint mat. Classical & hand-drawn on
    the paper; the tech lives on the mat and in the motion. Hover
    a room: vivid fresco pigment pools toward the cursor and bleeds
@@ -10,7 +10,7 @@
   const VB_W = 1600, VB_H = 1040;
   const INK = '#23221B', INK_SOFT = '#6C6D60', PAPER = '#F3EFE3', DIM = '#8C7F63';
 
-  // vivid Pompeian pigments — hot (wash/lines) + dark (legible labels)
+  // vivid Pompeian pigments â€” hot (wash/lines) + dark (legible labels)
   const PAL = {
     red:   { hot: '#D11F2B', dk: '#8E1620' },   // cinnabar
     blue:  { hot: '#1E7FD0', dk: '#11538C' },   // Egyptian blue
@@ -27,17 +27,17 @@
 
   const ROOMS = [
     { id: 'cv',      label: 'CV',             ac: 'blue',  rect: [XL, YT, ATL - XL, MY - YT], apse: { cx: XL, cy: 385, r: 74, side: 'L' },
-      lp: [XL + 30, YT + 64], cn: [470, 380], note: 'Cambridge Classics · PGCE\n· OCR GCSE examiner.' },
+      lp: [XL + 30, YT + 64], cn: [470, 380], note: 'Cambridge Classics Â· PGCE\nÂ· OCR GCSE examiner.' },
     { id: 'edtech',  label: 'EDTECH',         ac: 'blue',  rect: [XL, MY, GDL - XL, YB - MY],
-      lp: [XL + 30, MY + 64], cn: [435, 730], note: 'Labyrinth — a Latin platform,\nlive in two London schools.' },
+      lp: [XL + 30, MY + 64], cn: [435, 730], note: 'the platform â€” a Latin platform,\nlive in two London schools.' },
     { id: 'about',   label: 'ABOUT',          ac: 'red',   rect: [ATL, YT, ATR - ATL, MY - YT],
       lp: [ATL + 26, YT + 60], cn: [AXX, 385], note: 'Latin reaches 3% of state schools.\nThe problem is the pedagogy.' },
     { id: 'garden',  label: 'DIGITAL GARDEN', ac: 'green', rect: [GDL, MY, GDR - GDL, YB - MY], apse: { cx: AXX, cy: YB, r: 80, side: 'D' }, court: true,
       lp: [GDL + 30, MY + 60], cn: [AXX, 720], note: 'Notes & half-formed ideas,\ntended irregularly.' },
     { id: 'gallery', label: 'GALLERY',        ac: 'ochre', rect: [ATR, YT, XR - ATR, MY - YT], apse: { cx: XR, cy: 385, r: 74, side: 'R' },
-      lp: [ATR + 30, YT + 64], cn: [1130, 380], note: 'Photography · RA Young Artists\n· the Interamna coin hoard.' },
+      lp: [ATR + 30, YT + 64], cn: [1130, 380], note: 'Photography Â· RA Young Artists\nÂ· the Interamna coin hoard.' },
     { id: 'output',  label: 'OUTPUT',         ac: 'ochre', rect: [GDR, MY, XR - GDR, YB - MY],
-      lp: [GDR + 30, MY + 64], cn: [1165, 730], note: 'VR Troy · Montagu Butler Prize\n— what I am building now.' },
+      lp: [GDR + 30, MY + 64], cn: [1165, 730], note: 'VR Troy Â· Montagu Butler Prize\nâ€” what I am building now.' },
   ];
   const byId = Object.fromEntries(ROOMS.map((r) => [r.id, r]));
 
@@ -129,7 +129,7 @@
     s += wall(true, GDL, MY, YB, IN, iw, [[690, 760]], dr);
     s += wall(true, GDR, MY, YB, IN, iw, [[690, 760]], dr);
     s += wall(false, MY, XL, XR, IN, iw, [[360, 430], [740, 860], [1150, 1220]], dr);
-    // thin sub-chambers (density) — drawn lighter
+    // thin sub-chambers (density) â€” drawn lighter
     const th = { draw: true, op: 0.7 };
     s += wseg(500, YT, 500, 322, 9, 2.4, false, true, th) + wseg(XL, 322, 500, 322, 9, 2.4, false, true, th);   // CV cubiculum
     s += wseg(1100, YT, 1100, 322, 9, 2.4, false, true, th) + wseg(1100, 322, XR, 322, 9, 2.4, true, false, th); // GALLERY cubiculum
@@ -207,19 +207,19 @@
     return s;
   }
 
-  // ---- fresco decoration (reveal only) — kept restrained for legibility ----
+  // ---- fresco decoration (reveal only) â€” kept restrained for legibility ----
   function fresco(r, c) {
     const [rx, ry, rw, rh] = r.rect; const cx = rx + rw / 2;
     const pad = 30, w = 2.6, o = { color: c, op: 0.85, wav: 0.6 };
     let s = hrect(rx + pad, ry + pad, rw - 2 * pad, rh - 2 * pad, w, o);
     if (!r.court) {
-      // a single Greek-key (meander) frieze just inside the top edge — away from the note
+      // a single Greek-key (meander) frieze just inside the top edge â€” away from the note
       const by = ry + pad + 26, bx0 = rx + pad + 14, bx1 = rx + rw - pad - 14, step = 26;
       let mk = `M ${bx0} ${by}`, up = true;
       for (let x = bx0; x < bx1 - step; x += step) { mk += ` h ${step * 0.5} v ${up ? -12 : 12} h ${step * 0.5} v ${up ? 12 : -12}`; up = !up; }
       s += `<path d="${mk}" fill="none" stroke="${c}" stroke-width="1.9" opacity="0.5"/>`;
     } else {
-      // garden in bloom — a few flowers wake among the beds
+      // garden in bloom â€” a few flowers wake among the beds
       const m = 60, x0 = rx + m, y0 = ry + m + 24, x1 = rx + rw - m, y1 = ry + rh - m + 10;
       [[rx + 130, y0 + 56], [rx + rw - 150, y0 + 56], [rx + 130, y1 - 46], [rx + rw - 150, y1 - 46]].forEach(([fx, fy]) => {
         for (let k = 0; k < 6; k++) { const a = k / 6 * Math.PI * 2; s += disc(fx + Math.cos(a) * 11, fy + Math.sin(a) * 11, 4, c, 0.7); }
@@ -264,7 +264,7 @@
         const th = 30 + Math.round(rnd() * 16);            // trunk height
         const cr = 24 + Math.round(rnd() * 12);            // canopy radius
         s += stroke(t.x, t.y + th, t.x + lean * 30, t.y, 3.2, { color: G, op: 0.72, over: 0, wav: 0.7 });
-        // 2–3 overlapping canopy lobes, varied
+        // 2â€“3 overlapping canopy lobes, varied
         const lobes = 2 + Math.round(rnd());
         s += circ(t.x, t.y - cr * 0.4, cr, G, 2.4, 0.72);
         for (let k = 0; k < lobes; k++) { const a = Math.PI + k * (Math.PI / (lobes + 1)); s += circ(t.x + Math.cos(a) * cr * 0.7, t.y - cr * 0.1 + Math.sin(a) * 6, cr * 0.62, G, 2.2, 0.6); }
@@ -445,7 +445,7 @@
 
   const toSvg = (e) => { const m = svgEl.getScreenCTM(); if (!m) return null; const pt = svgEl.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY; return pt.matrixTransform(m.inverse()); };
   const ACTION = {
-    cv:      { type: 'download', href: 'files/Monty-Hunt-CV.pdf', name: 'Monty Hunt — CV.pdf' },
+    cv:      { type: 'download', href: 'files/Monty-Hunt-CV.pdf', name: 'Monty Hunt â€” CV.pdf' },
     edtech:  { type: 'newtab',   href: 'edtech.html' },
     about:   { type: 'go',       href: 'about.html' },
     garden:  { type: 'go',       href: 'garden.html' },
@@ -516,3 +516,4 @@
   }
   setTimeout(walk, 3800);
 })();
+
