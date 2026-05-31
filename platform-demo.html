@@ -223,7 +223,7 @@
 </style>
 </head>
 <body>
-<a class="ppp-home" href="index.html">&#8962; Home</a><div id="root"></div>
+<div id="root"></div>
 <script type="text/babel">
   const { useState, useEffect, useRef } = React;
   const mockFetch=(p,opts={})=>{
@@ -774,14 +774,7 @@
     const nodes=nodeOrder2.map(n=>nodeMap2[n]);
 
     const unreadCount=feedbackMsgs.filter(m=>!m.read).length;
-    const tabs=[
-      {key:'homework',label:'Progress'},
-      {key:'leaderboard',label:'Leaderboard'},
-      {key:'weak',label:'Weak Verbs'},
-      {key:'feedback',label:unreadCount>0?`Feedback (${unreadCount})`:'Feedback'},
-      {key:'timing',label:timing.filter(t=>t.flag>0).length>0?`Timing (${timing.filter(t=>t.flag>0).length})`:'Timing'},
-      {key:'preview',label:'Preview'},
-    ];
+    const tabs=[{key:'preview',label:'Curriculum'}];
 
     return(
       <div className="fullscreen">
