@@ -215,31 +215,19 @@
     body.barrel-rolling{animation:barrelRoll 4s cubic-bezier(.42,0,.58,1) 1 forwards;transform-origin:50% 50%}
     /* Black html background so rotating corners show black, not white flash */
     html{background:#000}
-    .ppp-home{position:fixed;top:16px;right:20px;z-index:200;font-family:'Inter',sans-serif;font-size:12px;
-    letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:#fff;text-decoration:none;
-    padding:7px 14px;border:1.5px solid rgba(255,255,255,.45);border-radius:8px;
-    background:rgba(0,33,71,.3);transition:background .2s;}
-  .ppp-home:hover{background:rgba(0,33,71,.7);}
+    .ppp-home{position:fixed;top:14px;right:18px;z-index:200;}
 </style>
 </head>
 <body>
 <div id="root"></div>
 <script type="text/babel">
   const { useState, useEffect, useRef } = React;
-  const mockFetch=(p,opts={})=>{
-    const method=(opts.method||'GET').toUpperCase();
-    // sets list
+  const api=(p,opts={})=>{
     if(p==='/api/sets') return Promise.resolve(PLATFORM_DATA.sets_list);
-    // single set
-    const smatch=p.match(/^\/api\/sets\/(\d+)$/);
-    if(smatch) return Promise.resolve(PLATFORM_DATA.sets_by_id[smatch[1]]||null);
-    // no-op endpoints
-    if(p.startsWith('/api/teacher/')||p.startsWith('/api/complete')||
-       p.startsWith('/api/session')||p.startsWith('/api/pupil/'))
-      return Promise.resolve(Array.isArray([])?[]:{});
-    return Promise.resolve({});
+    const sm=p.match(/^\/api\/sets\/(\d+)$/);
+    if(sm) return Promise.resolve(PLATFORM_DATA.sets_by_id[sm[1]]||null);
+    return Promise.resolve(Array.isArray([])?[]:{});
   };
-  const api=(p,opts={})=>mockFetch(p,opts);
   const post=(p,b)=>Promise.resolve({session_id:0});
   // Shuffle once and lock - do NOT re-shuffle on state update
   const shuffleOnce = arr => { const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]} return a };
@@ -618,7 +606,7 @@
     const doT=()=>{if(pwd==='latinmagistra')onPreview();else alert('Wrong password')};
     return(
       <div className="fullscreen login-page">
-        <div className="topbar"><h1 style={{fontFamily:'Crimson Text,serif',fontSize:'1.4rem',letterSpacing:'.1em',textTransform:'uppercase',fontWeight:600}}>Principal Parts Platform</h1></div>
+        <div className="topbar"><h1 className="brandmark"><img className="brand-badge" src="/static/wlfs-badge.png" alt="" /><span className="brand-text"><span>West London</span><span>Free School</span></span></h1></div>
         <div className="login-body anim-fade">
           <h2 style={{fontSize:'3.5rem',marginBottom:20,color:'var(--navy)'}}>Select your name</h2>
           <div className="pupil-grid">{pupils.map(p=><button key={p.id} className="pupil-btn" onClick={()=>onLogin(p)}>{p.first_name}</button>)}</div>
@@ -675,7 +663,7 @@
     let foundFirst=false;
     return(
       <div className="fullscreen">
-        <div className="topbar"><h1 style={{fontFamily:'Crimson Text,serif',fontSize:'1.4rem',letterSpacing:'.1em',textTransform:'uppercase',fontWeight:600}}>Principal Parts Platform</h1>
+        <div className="topbar"><h1 className="brandmark"><img className="brand-badge" src="/static/wlfs-badge.png" alt="" /><span className="brand-text"><span>West London</span><span>Free School</span></span></h1>
           <div style={{display:'flex',gap:16,alignItems:'center'}}>
             <span style={{fontSize:'1.2rem',fontWeight:700}}>{pupil.first_name}</span>
             <button onClick={openLB} style={{background:'rgba(255,255,255,.2)',color:'#fff',padding:'10px 20px',fontSize:'1rem',border:'none',borderRadius:10,fontWeight:700,cursor:'pointer'}}>Leaderboard</button>
@@ -778,16 +766,12 @@
 
     return(
       <div className="fullscreen">
-        <div className="topbar"><h1>WLFS — TEACHER PORTAL</h1>
-          <div style={{display:'flex',gap:24,alignItems:'center'}}>
-            <span style={{fontSize:'1.2rem',fontWeight:700}}>Magistra</span>
-            <button onClick={onLogout} style={{background:'rgba(255,255,255,.2)',color:'#fff',padding:'10px 20px',fontSize:'1rem',border:'none',borderRadius:10,fontWeight:700,cursor:'pointer'}}>Log out</button>
-          </div>
+        <div className="topbar" style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+          <h1 style={{fontFamily:"'Crimson Text',serif",fontSize:'1.3rem',letterSpacing:'.1em',textTransform:'uppercase',fontWeight:600}}>Principal Parts Platform</h1>
+          <a href="index.html" style={{fontFamily:"'Inter',sans-serif",fontSize:'0.78rem',letterSpacing:'.14em',textTransform:'uppercase',fontWeight:700,color:'#fff',textDecoration:'none',padding:'8px 16px',border:'1.5px solid rgba(255,255,255,.45)',borderRadius:8,background:'rgba(255,255,255,.1)'}}>&#8962; Home</a>
         </div>
         <div className="t-dash anim-fade">
-          )}
-            {selPupil&&<div className={`t-tab ${tab==='pupil'?'active':''}`} onClick={()=>setTab('pupil')}>{selPupil.first_name}</div>}
-          </div>
+          
           <div className="t-content">
 
             {tab==='homework'&&<div style={{maxWidth:960}}>
@@ -913,14 +897,14 @@
                 {misc.slice(0,20).map((r,i)=><tr key={i}><td>{r.question_text||r.question}</td><td className="latin" style={{color:'var(--red-bright)'}}>{r.pupil_answer||r.wrong_answer}</td><td className="latin" style={{color:'var(--green-bright)'}}>{r.correct_answer||r.correct}</td><td>{r.occurrences||r.count||r.n}</td></tr>)}
               </tbody></table></div>}
 
-            <div>
+            {tab==='preview'&&<div>
               <p style={{fontSize:'1.2rem',color:'var(--grey)',marginBottom:20}}>Click any set to preview. Progress will not be saved.</p>
               {nodes.map(node=>(<div key={node.label}><div className="section-label">{node.label}</div>
                 <div className="set-grid">{node.sets.map(s=>(<div key={s.id} className="set-card passed" onClick={()=>api(`/api/sets/${s.id}`).then(onStart)}>
                   <div className="tag-badge" style={{background:tagColorWithBadge(s.type,s.badge)}}>{tagLabelWithBadge(s.type,s.badge)}</div>
                   <h3 dangerouslySetInnerHTML={{__html:renderOrdinals(s.title)}}></h3>
                 </div>))}</div></div>))}
-            </div>
+            </div>}
 
             {tab==='pupil'&&selPupil&&<div style={{maxWidth:900}}>
               <h2 style={{fontSize:'1.8rem',marginBottom:20}}>{selPupil.first_name||selPupil.name}</h2>
@@ -977,7 +961,7 @@
 
     return(
       <div className={isOverlay?"modal-overlay anim-fade":"fullscreen"}>
-        {!isOverlay&&<div className="topbar"><h1 style={{fontFamily:'Crimson Text,serif',fontSize:'1.4rem',letterSpacing:'.1em',textTransform:'uppercase',fontWeight:600}}>Principal Parts Platform</h1></div>}
+        {!isOverlay&&<div className="topbar"><h1 className="brandmark"><img className="brand-badge" src="/static/wlfs-badge.png" alt="" /><span className="brand-text"><span>West London</span><span>Free School</span></span></h1></div>}
         <div className={isOverlay?"modal-content":"front-page anim-fade"}>
           <div className={isOverlay?"":"front-box"}>
             <h2 style={{fontSize:isOverlay?'3.5rem':'3.5rem',marginBottom:24,color:'var(--navy)'}} dangerouslySetInnerHTML={{__html:renderOrdinals(set.title)}}></h2>
@@ -1249,7 +1233,7 @@
       return()=>clearTimeout(id);
     },[idx]);
     return(
-      <div className="fullscreen"><div className="topbar"><h1 style={{fontFamily:'Crimson Text,serif',fontSize:'1.4rem',letterSpacing:'.1em',textTransform:'uppercase',fontWeight:600}}>Principal Parts Platform</h1></div>
+      <div className="fullscreen"><div className="topbar"><h1 className="brandmark"><img className="brand-badge" src="/static/wlfs-badge.png" alt="" /><span className="brand-text"><span>West London</span><span>Free School</span></span></h1></div>
         <div className="activity anim-fade">
           <div className="activity-bar"><ProgressBar pct={((idx+1)/total)*100}/><span style={{fontWeight:700,color:'var(--grey)'}}>{idx+1} / {total}</span></div>
           <div className="intro-body"><div className="intro-card stagger-intro" ref={cardRef}>
@@ -1307,7 +1291,7 @@
       <div className="eng" style={{color:'var(--grey)',fontSize:'0.9rem',marginTop:4}}>{(v.english||[v.eng_present||'']).join(', ')}</div>
     </div>);
     return(
-      <div className="fullscreen"><div className="topbar"><h1 style={{fontFamily:'Crimson Text,serif',fontSize:'1.4rem',letterSpacing:'.1em',textTransform:'uppercase',fontWeight:600}}>Principal Parts Platform</h1></div>
+      <div className="fullscreen"><div className="topbar"><h1 className="brandmark"><img className="brand-badge" src="/static/wlfs-badge.png" alt="" /><span className="brand-text"><span>West London</span><span>Free School</span></span></h1></div>
         <div className="activity anim-fade"><div className="activity-bar"><ProgressBar pct={1}/></div>
         <div className="activity-body">
           <p style={{fontSize:'1.5rem',fontWeight:800,color:'var(--navy)',marginBottom:8}}>Here's an overview of the {items.length} words in this set</p>
@@ -1407,7 +1391,7 @@
     const estMs=avgMs>0?remaining.length*avgMs:0;
     const estLabel=avgMs>0?(estMs>=60000?`~${Math.round(estMs/60000)} min left`:`~${Math.round(estMs/1000)}s left`):null;
     return(
-      <div className="fullscreen"><div className="topbar"><h1 style={{fontFamily:'Crimson Text,serif',fontSize:'1.4rem',letterSpacing:'.1em',textTransform:'uppercase',fontWeight:600}}>Principal Parts Platform</h1></div>
+      <div className="fullscreen"><div className="topbar"><h1 className="brandmark"><img className="brand-badge" src="/static/wlfs-badge.png" alt="" /><span className="brand-text"><span>West London</span><span>Free School</span></span></h1></div>
         <div className="activity anim-fade"><div className="activity-bar"><ProgressBar pct={pct}/></div>
         <div className="activity-body">
           <div style={{display:'flex',alignItems:'center',gap:20,width:'100%',maxWidth:1140,justifyContent:'center'}}>
@@ -1513,7 +1497,7 @@
     if(!q)return null;
     const isRetry=q.failed;
     return(
-      <div className="fullscreen"><div className="topbar"><h1 style={{fontFamily:'Crimson Text,serif',fontSize:'1.4rem',letterSpacing:'.1em',textTransform:'uppercase',fontWeight:600}}>Principal Parts Platform</h1></div>
+      <div className="fullscreen"><div className="topbar"><h1 className="brandmark"><img className="brand-badge" src="/static/wlfs-badge.png" alt="" /><span className="brand-text"><span>West London</span><span>Free School</span></span></h1></div>
         <div className="activity anim-fade">
           <div className="activity-bar"><ProgressBar pct={pct}/></div>
           <div style={{padding:'12px 40px 4px',width:'100%',maxWidth:1000,alignSelf:'center',boxSizing:'border-box'}}>
@@ -1573,7 +1557,7 @@
     const isRetry=q?.failed;
     if(!q)return null;
     return(
-      <div className="fullscreen"><div className="topbar"><h1 style={{fontFamily:'Crimson Text,serif',fontSize:'1.4rem',letterSpacing:'.1em',textTransform:'uppercase',fontWeight:600}}>Principal Parts Platform</h1></div>
+      <div className="fullscreen"><div className="topbar"><h1 className="brandmark"><img className="brand-badge" src="/static/wlfs-badge.png" alt="" /><span className="brand-text"><span>West London</span><span>Free School</span></span></h1></div>
         <div className="activity anim-fade"><div className="activity-bar"><ProgressBar pct={pct}/></div>
         <div className="activity-body">
           <div style={{minHeight:40,display:'flex',justifyContent:'center',alignItems:'center',marginBottom:8}}>
@@ -1719,7 +1703,7 @@
     };
 
     return(
-      <div className="fullscreen"><div className="topbar"><h1 style={{fontFamily:'Crimson Text,serif',fontSize:'1.4rem',letterSpacing:'.1em',textTransform:'uppercase',fontWeight:600}}>Principal Parts Platform</h1></div>
+      <div className="fullscreen"><div className="topbar"><h1 className="brandmark"><img className="brand-badge" src="/static/wlfs-badge.png" alt="" /><span className="brand-text"><span>West London</span><span>Free School</span></span></h1></div>
         <div className="activity anim-fade"><div className="activity-bar"><ProgressBar pct={5}/></div>
         <div className="activity-body">
           <div className="pattern-box" style={{maxWidth:1000}}>
@@ -1867,7 +1851,7 @@
     const bpFreshInQueue=queue.slice(qIdx).filter(c=>!c.revisit).length;
     const bpHardInQueue=queue.slice(qIdx+1).filter(c=>c.revisit).length;
     return(
-      <div className="fullscreen"><div className="topbar"><h1 style={{fontFamily:'Crimson Text,serif',fontSize:'1.4rem',letterSpacing:'.1em',textTransform:'uppercase',fontWeight:600}}>Principal Parts Platform</h1></div>
+      <div className="fullscreen"><div className="topbar"><h1 className="brandmark"><img className="brand-badge" src="/static/wlfs-badge.png" alt="" /><span className="brand-text"><span>West London</span><span>Free School</span></span></h1></div>
         <div className="activity anim-fade"><div className="activity-bar"><ProgressBar pct={pct}/></div>
         <div className="activity-body">
           {/* Question text is OUTSIDE the animation wrapper so it doesn't swipe with the cards */}
@@ -2028,7 +2012,7 @@
     });
     const isRetry=v.failed;
     return(
-      <div className="fullscreen"><div className="topbar"><h1 style={{fontFamily:'Crimson Text,serif',fontSize:'1.4rem',letterSpacing:'.1em',textTransform:'uppercase',fontWeight:600}}>Principal Parts Platform</h1></div>
+      <div className="fullscreen"><div className="topbar"><h1 className="brandmark"><img className="brand-badge" src="/static/wlfs-badge.png" alt="" /><span className="brand-text"><span>West London</span><span>Free School</span></span></h1></div>
         <div className="activity anim-fade"><div className="activity-bar"><ProgressBar pct={pct}/></div>
         <div className="activity-body" style={{overflowY:'hidden',justifyContent:'center'}}>
           <div style={{minHeight:40,display:'flex',justifyContent:'center',alignItems:'center',marginBottom:8}}>
@@ -2192,7 +2176,7 @@
     const phaseLabel = isProgressive ? (currentPhase===1 ? 'Phase 1: Type the perfect' : currentPhase===2 ? 'Phase 2: Type the PPP' : 'Phase 3: All principal parts') : null;
 
     return(
-      <div className="fullscreen"><div className="topbar"><h1 style={{fontFamily:'Crimson Text,serif',fontSize:'1.4rem',letterSpacing:'.1em',textTransform:'uppercase',fontWeight:600}}>Principal Parts Platform</h1></div>
+      <div className="fullscreen"><div className="topbar"><h1 className="brandmark"><img className="brand-badge" src="/static/wlfs-badge.png" alt="" /><span className="brand-text"><span>West London</span><span>Free School</span></span></h1></div>
         <div className="activity anim-fade"><div className="activity-bar"><ProgressBar pct={pct}/></div>
         <div className="activity-body">
           <div style={{minHeight:40,display:'flex',justifyContent:'center',alignItems:'center',marginBottom:8}}>
@@ -2395,7 +2379,7 @@
       boxShadow:'0 2px 12px rgba(0,33,71,0.08)',border:'2px solid var(--lgrey)',width:'100%',maxWidth:960};
 
     return(
-      <div className="fullscreen"><div className="topbar"><h1 style={{fontFamily:'Crimson Text,serif',fontSize:'1.4rem',letterSpacing:'.1em',textTransform:'uppercase',fontWeight:600}}>Principal Parts Platform</h1></div>
+      <div className="fullscreen"><div className="topbar"><h1 className="brandmark"><img className="brand-badge" src="/static/wlfs-badge.png" alt="" /><span className="brand-text"><span>West London</span><span>Free School</span></span></h1></div>
         <div className="activity anim-fade"><div className="activity-bar"><ProgressBar pct={pct}/></div>
         <div className="activity-body">
           <div style={{minHeight:32,display:'flex',justifyContent:'center',alignItems:'center',marginBottom:6}}>
@@ -2554,7 +2538,7 @@
       {val:v.ppp,      label:'PPP',         idx:3, always:false, noPPP:v.ppp===null},
     ];
     return(
-      <div className="fullscreen"><div className="topbar"><h1 style={{fontFamily:'Crimson Text,serif',fontSize:'1.4rem',letterSpacing:'.1em',textTransform:'uppercase',fontWeight:600}}>Principal Parts Platform</h1></div>
+      <div className="fullscreen"><div className="topbar"><h1 className="brandmark"><img className="brand-badge" src="/static/wlfs-badge.png" alt="" /><span className="brand-text"><span>West London</span><span>Free School</span></span></h1></div>
         <div className="activity anim-fade"><div className="activity-bar"><ProgressBar pct={pct}/></div>
         <div className="activity-body">
           <p style={{color:'var(--grey)',marginBottom:16,fontWeight:700,fontSize:'1.2rem',textAlign:'center',width:'100%'}}>
@@ -2658,7 +2642,7 @@
       gap:'4px 0',background:'white',borderRadius:16,padding:'22px 28px',
       boxShadow:'0 2px 12px rgba(0,33,71,0.08)',border:'2px solid var(--lgrey)',width:'100%',maxWidth:960,marginBottom:20};
     return(
-      <div className="fullscreen"><div className="topbar"><h1 style={{fontFamily:'Crimson Text,serif',fontSize:'1.4rem',letterSpacing:'.1em',textTransform:'uppercase',fontWeight:600}}>Principal Parts Platform</h1></div>
+      <div className="fullscreen"><div className="topbar"><h1 className="brandmark"><img className="brand-badge" src="/static/wlfs-badge.png" alt="" /><span className="brand-text"><span>West London</span><span>Free School</span></span></h1></div>
         <div className="activity anim-fade"><div className="activity-bar"><ProgressBar pct={pct}/></div>
         <div className="activity-body" style={{overflowY:'hidden',justifyContent:'center'}}>
           <div style={{minHeight:40,display:'flex',justifyContent:'center',alignItems:'center',marginBottom:8}}>
@@ -2714,7 +2698,7 @@
     const nx=()=>{resetScroll();setFb(null);setSel(null);if(idx+1>=qs.length)onDone();else setIdx(i=>i+1)};
     useEffect(()=>{const h=e=>{if(e.ctrlKey&&e.altKey&&e.code==="KeyK"){e.preventDefault();e.stopPropagation();if(!q?.failed)addC();nx();return;}if(e.ctrlKey&&e.altKey&&e.code==="KeyJ"){e.preventDefault();e.stopPropagation();nx();return;}if(fb&&(e.key==='Enter'||(e.code==='Space'&&e.target.tagName!=='INPUT'))){e.preventDefault();nx();}if(!fb){const n=parseInt(e.key);if(n>=1&&n<=tenseOpts.length)pick(tenseOpts[n-1])}};window.addEventListener('keydown',h);return()=>window.removeEventListener('keydown',h)});
     return(
-      <div className="fullscreen"><div className="topbar"><h1 style={{fontFamily:'Crimson Text,serif',fontSize:'1.4rem',letterSpacing:'.1em',textTransform:'uppercase',fontWeight:600}}>Principal Parts Platform</h1></div>
+      <div className="fullscreen"><div className="topbar"><h1 className="brandmark"><img className="brand-badge" src="/static/wlfs-badge.png" alt="" /><span className="brand-text"><span>West London</span><span>Free School</span></span></h1></div>
         <div className="activity anim-fade"><div className="activity-bar"><ProgressBar pct={pct}/></div>
         <div className="activity-body" style={{overflowY:'hidden',justifyContent:'center'}}>
           <div className="mc-prompt"><h2>What tense is {renderScaffolded(q.form)}?</h2></div>
@@ -2782,7 +2766,7 @@
     if(!q)return null;
     const isRetry=q.failed;
     return(
-      <div className="fullscreen"><div className="topbar"><h1 style={{fontFamily:'Crimson Text,serif',fontSize:'1.4rem',letterSpacing:'.1em',textTransform:'uppercase',fontWeight:600}}>Principal Parts Platform</h1></div>
+      <div className="fullscreen"><div className="topbar"><h1 className="brandmark"><img className="brand-badge" src="/static/wlfs-badge.png" alt="" /><span className="brand-text"><span>West London</span><span>Free School</span></span></h1></div>
         <div className="activity anim-fade">
           <div className="activity-bar"><ProgressBar pct={pct}/></div>
           {!isRetry&&<div style={{padding:'12px 40px 4px',width:'100%',maxWidth:1000,alignSelf:'center',boxSizing:'border-box'}}>
@@ -2865,7 +2849,7 @@
       </div>
     );
     return(
-      <div className="fullscreen"><div className="topbar"><h1 style={{fontFamily:'Crimson Text,serif',fontSize:'1.4rem',letterSpacing:'.1em',textTransform:'uppercase',fontWeight:600}}>Principal Parts Platform</h1></div>
+      <div className="fullscreen"><div className="topbar"><h1 className="brandmark"><img className="brand-badge" src="/static/wlfs-badge.png" alt="" /><span className="brand-text"><span>West London</span><span>Free School</span></span></h1></div>
         <div className="activity anim-fade"><div className="activity-bar"><ProgressBar pct={pct}/></div>
         <div className="activity-body">
           <div className="flashcard" style={{maxWidth:800}}>
@@ -2940,7 +2924,7 @@
     if(!q)return null;
 
     return(
-      <div className="fullscreen"><div className="topbar"><h1 style={{fontFamily:'Crimson Text,serif',fontSize:'1.4rem',letterSpacing:'.1em',textTransform:'uppercase',fontWeight:600}}>Principal Parts Platform</h1></div>
+      <div className="fullscreen"><div className="topbar"><h1 className="brandmark"><img className="brand-badge" src="/static/wlfs-badge.png" alt="" /><span className="brand-text"><span>West London</span><span>Free School</span></span></h1></div>
         <div className="activity anim-fade">
           <div className="activity-bar"><ProgressBar pct={pct}/></div>
           <div style={{padding:'12px 40px 4px',width:'100%',maxWidth:1000,alignSelf:'center',boxSizing:'border-box'}}>
@@ -3163,7 +3147,7 @@
     return(
       <div className="fullscreen">
         {showNounTable&&<NounTable onClose={()=>{setShowNounTable(false);setNtMode('modal');}} onModeChange={setNtMode}/>}
-        <div className="topbar"><h1 style={{fontFamily:'Crimson Text,serif',fontSize:'1.4rem',letterSpacing:'.1em',textTransform:'uppercase',fontWeight:600}}>Principal Parts Platform</h1></div>
+        <div className="topbar"><h1 className="brandmark"><img className="brand-badge" src="/static/wlfs-badge.png" alt="" /><span className="brand-text"><span>West London</span><span>Free School</span></span></h1></div>
         <div className="activity anim-fade">
           <div className="activity-bar">
             <button onClick={()=>setShowNounTable(t=>!t)} className={`noun-table-chip${showNounTable?' active':''}`} title="Noun endings table">
@@ -3242,7 +3226,7 @@
     if(!q)return null;
     const isRetry=q.failed;
     return(
-      <div className="fullscreen"><div className="topbar"><h1 style={{fontFamily:'Crimson Text,serif',fontSize:'1.4rem',letterSpacing:'.1em',textTransform:'uppercase',fontWeight:600}}>Principal Parts Platform</h1></div>
+      <div className="fullscreen"><div className="topbar"><h1 className="brandmark"><img className="brand-badge" src="/static/wlfs-badge.png" alt="" /><span className="brand-text"><span>West London</span><span>Free School</span></span></h1></div>
         <div className="activity anim-fade"><div className="activity-bar"><ProgressBar pct={pct}/></div>
         <div className="activity-body">
           <div style={{minHeight:40,display:'flex',justifyContent:'center',alignItems:'center',marginBottom:8}}>
@@ -3308,7 +3292,7 @@
     useEffect(()=>{const h=e=>{if(fb&&e.key==='Enter')nx();if(!fb&&e.key==='Enter'&&selTense&&selPerson&&selNumber&&transAns.trim())check();};window.addEventListener('keydown',h);return()=>window.removeEventListener('keydown',h);});
     if(!q)return null;
     return(
-      <div className="fullscreen"><div className="topbar"><h1 style={{fontFamily:'Crimson Text,serif',fontSize:'1.4rem',letterSpacing:'.1em',textTransform:'uppercase',fontWeight:600}}>Principal Parts Platform</h1></div>
+      <div className="fullscreen"><div className="topbar"><h1 className="brandmark"><img className="brand-badge" src="/static/wlfs-badge.png" alt="" /><span className="brand-text"><span>West London</span><span>Free School</span></span></h1></div>
         <div className="activity anim-fade"><div className="activity-bar"><ProgressBar pct={pct}/></div>
         <div className="activity-body">
           <p style={{color:'var(--grey)',marginBottom:8,fontWeight:700,fontSize:'1.2rem'}}>Parse this verb and translate it into English:</p>
@@ -3450,7 +3434,7 @@
       window.addEventListener('keydown',h);return()=>window.removeEventListener('keydown',h);
     },[onRetry,onMenu]);
     return(
-      <div className="fullscreen"><div className="topbar"><h1 style={{fontFamily:'Crimson Text,serif',fontSize:'1.4rem',letterSpacing:'.1em',textTransform:'uppercase',fontWeight:600}}>Principal Parts Platform</h1></div>
+      <div className="fullscreen"><div className="topbar"><h1 className="brandmark"><img className="brand-badge" src="/static/wlfs-badge.png" alt="" /><span className="brand-text"><span>West London</span><span>Free School</span></span></h1></div>
         <div className="activity anim-fade">
           <div className="activity-body" style={{textAlign:'center',padding:'80px 20px'}}>
             <div style={{width:56,height:56,background:'var(--green-bright)',borderRadius:'50%',margin:'0 auto 20px',display:'flex',alignItems:'center',justifyContent:'center'}}>
@@ -3520,7 +3504,7 @@
     if(!w)return null;
     const pct=((idx)/wrongs.length)*100;
     return(
-      <div className="fullscreen"><div className="topbar"><h1 style={{fontFamily:'Crimson Text,serif',fontSize:'1.4rem',letterSpacing:'.1em',textTransform:'uppercase',fontWeight:600}}>Principal Parts Platform</h1></div>
+      <div className="fullscreen"><div className="topbar"><h1 className="brandmark"><img className="brand-badge" src="/static/wlfs-badge.png" alt="" /><span className="brand-text"><span>West London</span><span>Free School</span></span></h1></div>
         <div className="activity anim-fade">
           <div className="activity-bar"><ProgressBar pct={pct}/><span style={{fontWeight:700,color:'var(--grey)'}}>Quick review &middot; {idx+1} / {wrongs.length}</span></div>
           <div className="activity-body" style={{justifyContent:'center',padding:'40px 20px',paddingTop:36}}>
