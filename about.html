@@ -1,87 +1,78 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Monty Hunt "” About</title>
+<title>Monty Hunt</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <style>
-  :root{ --ground:#8C211C; --ground2:#74160F; --ink:#F4ECD8; --soft:#E3C9A0; --gold:#D9B25A; --gold-hi:#F0D588; }
+  :root{--ground:#8C211C;--ground2:#74160F;--ink:#F4ECD8;--soft:#E3C9A0;--gold:#D9B25A;--gold-hi:#F0D588;}
   *{box-sizing:border-box;margin:0;padding:0;}
   html,body{min-height:100%;}
-  html{background:var(--ground2);}
-  body{font-family:'EB Garamond',serif;color:var(--ink);overflow-x:hidden;min-height:100vh;
-    background:radial-gradient(130% 110% at 50% 0%, var(--ground) 0%, var(--ground2) 100%);}
-  body::after{content:'';position:fixed;inset:0;pointer-events:none;mix-blend-mode:multiply;opacity:.5;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");}
-
+  html{background:#74160F;}
+  body{font-family:'EB Garamond',serif;color:#F4ECD8;overflow-x:hidden;min-height:100vh;
+    background:radial-gradient(130% 110% at 50% 0%,#8C211C 0%,#74160F 100%);}
   .home{position:fixed;top:26px;left:26px;z-index:20;display:inline-flex;align-items:center;gap:9px;
     font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.18em;text-transform:uppercase;
-    color:var(--ink);text-decoration:none;padding:10px 16px;border:1.5px solid var(--gold);
+    color:#F4ECD8;text-decoration:none;padding:10px 16px;border:1.5px solid #D9B25A;
     background:rgba(0,0,0,.18);transition:background .25s,color .25s;}
-  .home:hover{background:var(--gold);color:var(--ground2);}
-  .home span{font-size:14px;}
-
+  .home:hover{background:#D9B25A;color:#74160F;}
   .wrap{max-width:1080px;margin:0 auto;padding:120px 40px 90px;
     display:grid;grid-template-columns:340px 1fr;gap:60px;align-items:start;}
-  @media(max-width:820px){.wrap{grid-template-columns:1fr;gap:36px;padding-top:104px;}}
-
-  .portrait{position:relative;}
-  .portrait img{display:block;width:340px;height:430px;border:1px solid var(--gold);box-shadow:0 24px 50px -20px rgba(0,0,0,.6);}
+  @media(max-width:820px){.wrap{grid-template-columns:1fr;gap:36px;padding-top:100px;}}
+  .portrait img{display:block;width:340px;height:430px;object-fit:cover;object-position:center top;
+    border:1px solid #D9B25A;box-shadow:0 24px 50px -20px rgba(0,0,0,.6);}
   @media(max-width:820px){.portrait img{width:260px;height:330px;margin:0 auto;}}
-  .portrait .cap{margin-top:14px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.22em;
-    text-transform:uppercase;color:var(--soft);text-align:center;}
-
-  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.34em;text-transform:uppercase;color:var(--gold-hi);}
-  h1{font-family:'Cinzel',serif;font-weight:800;font-size:58px;letter-spacing:.06em;line-height:1.04;margin:14px 0 6px;}
-  .role{font-style:italic;font-size:22px;color:var(--soft);margin-bottom:30px;}
-  .rule{width:74px;height:3px;background:var(--gold);margin:0 0 30px;}
-  .bio p{font-size:20px;line-height:1.62;margin-bottom:20px;max-width:54ch;text-wrap:pretty;}
-  .pull{font-family:'Cinzel',serif;font-weight:600;font-size:25px;line-height:1.4;color:var(--gold-hi);
-    border-left:3px solid var(--gold);padding-left:22px;margin:34px 0;max-width:46ch;}
+  .cap{margin-top:14px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.22em;
+    text-transform:uppercase;color:#E3C9A0;text-align:center;}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.34em;text-transform:uppercase;color:#F0D588;margin-bottom:14px;}
+  h1{font-family:'Cinzel',serif;font-weight:800;font-size:58px;letter-spacing:.06em;line-height:1.04;margin:0 0 6px;}
+  .role{font-style:italic;font-size:22px;color:#E3C9A0;margin-bottom:30px;}
+  .rule{width:74px;height:3px;background:#D9B25A;margin:0 0 30px;}
+  .bio p{font-size:20px;line-height:1.65;margin-bottom:20px;max-width:54ch;}
+  .pull{font-family:'Cinzel',serif;font-weight:600;font-size:24px;line-height:1.4;color:#F0D588;
+    border-left:3px solid #D9B25A;padding-left:22px;margin:30px 0;max-width:46ch;}
   .meta{margin-top:38px;display:flex;flex-wrap:wrap;gap:10px 26px;font-family:'IBM Plex Mono',monospace;
-    font-size:12px;letter-spacing:.12em;color:var(--soft);text-transform:uppercase;}
-  .meta b{color:var(--gold-hi);font-weight:500;}
-
-  .fade{position:fixed;inset:0;z-index:50;background:var(--ground);pointer-events:none;
-    animation:rev .7s ease forwards;}
+    font-size:12px;letter-spacing:.12em;color:#E3C9A0;text-transform:uppercase;}
+  .meta b{color:#F0D588;font-weight:500;}
+  .email{margin-top:34px;}
+  .email a{font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.1em;
+    color:#F0D588;text-decoration:none;border-bottom:1px solid rgba(240,213,136,.35);padding-bottom:2px;}
+  .email a:hover{border-color:#F0D588;}
+  .fade{position:fixed;inset:0;z-index:50;background:#8C211C;pointer-events:none;animation:rev .7s ease forwards;}
   @keyframes rev{to{opacity:0;}}
 </style>
 </head>
 <body>
-  <a class=”home” href=”index.html”><span>&#8962;</span> Home</a>
-  <div class=”wrap”>
-    <div class=”portrait”>
-      <img src=”images/monty.jpg” alt=”Monty Hunt” style=”display:block;width:340px;height:430px;object-fit:cover;object-position:center top;” onerror=”this.style.background='rgba(255,255,255,0.08)'” />
-      <div class=”cap”>Monty Hunt &middot; London</div>
+  <a class="home" href="index.html">&#8962; Home</a>
+  <div class="wrap">
+    <div class="portrait">
+      <img src="images/monty.jpg" alt="Monty Hunt" />
+      <div class="cap">Monty Hunt &middot; London</div>
     </div>
-    <div class=”body”>
-      <div class=”eyebrow”>About</div>
+    <div>
+      <div class="eyebrow">About</div>
       <h1>Monty Hunt</h1>
-      <div class=”role”>Cambridge Classicist. Latin teacher. Building for EdTech.</div>
-      <div class=”rule”></div>
-      <div class=”bio”>
-        <p>I&rsquo;m a Cambridge Classics graduate, currently completing my PGCE while teaching Latin in state schools in London. I went into teaching to spend time close to the problem &mdash; watching where pupils get stuck, running experiments, building things that help.</p>
-        <p class=”pull”>Latin reaches 3% of state schools. The subject isn&rsquo;t the problem. The pedagogy is.</p>
-        <p>This site exists to make it easier to find what I&rsquo;ve built and where I&rsquo;m headed. The EdTech work is the thread connecting most of it.</p>
+      <div class="role">Cambridge Classicist. Latin teacher. Building for EdTech.</div>
+      <div class="rule"></div>
+      <div class="bio">
+        <p>I am a Cambridge Classics graduate, currently completing my PGCE while teaching Latin in state schools in London. I went into teaching to spend time close to the problem &#8212; watching where pupils get stuck, running experiments, building things that help.</p>
+        <p class="pull">Latin reaches 3% of state schools. The subject is not the problem. The pedagogy is.</p>
+        <p>This site exists to make it easier to find what I have built and where I am headed. The EdTech work is the thread connecting most of it.</p>
       </div>
-      <div class=”meta”>
+      <div class="meta">
         <span>Cambridge <b>Classics</b></span>
         <span>PGCE &middot; <b>Latin</b></span>
         <span><b>OCR</b> GCSE Examiner</span>
         <span>Montagu Butler <b>Prize</b></span>
       </div>
-      <div class=”contact-line” style=”margin-top:36px;”>
-        <a href=”mailto:montymaximilianhunt@gmail.com” style=”font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.1em;color:var(--gold-hi);text-decoration:none;border-bottom:1px solid rgba(240,213,136,.4);padding-bottom:2px;”>montymaximilianhunt@gmail.com</a>
+      <div class="email">
+        <a href="mailto:montymaximilianhunt@gmail.com">montymaximilianhunt@gmail.com</a>
       </div>
     </div>
   </div>
-  <div class=”fade”></div>
+  <div class="fade"></div>
 </body>
 </html>
-
-
-
-
