@@ -227,19 +227,51 @@
     if(sm) return Promise.resolve(PLATFORM_DATA.sets_by_id[sm[1]]||null);
     return Promise.resolve(Array.isArray([])?[]:{});
   };
-  const norm=s=>(s||'').toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
+  // ── Client-side marking (mirrors app.py check endpoint) ──────────────────
+  const normEng=s=>{
+    let t=(s||'').toLowerCase().replace(/-/g,' ').replace(/[^a-z0-9/ ]/g,'').replace(/\s+/g,' ').trim();
+    t=t.replace(/\byou p\b/,'you pl').replace(/\byou s\b/,'you sg');
+    t=t.replace(/\bplural\b/,'pl').replace(/\bsingular\b/,'sg');
+    t=t.replace(/\bhe\s+she\s+it\b/,'he/she/it').replace(/\bhe\s+she\b/,'he/she');
+    return t;
+  };
+  const normLat=s=>(s||'').toLowerCase().replace(/-/g,'').replace(/[^a-z ]/g,'').replace(/\s+/g,' ').trim();
   const post=(p,b)=>{
     if(p==='/api/check'){
-      const pa=norm(b?.pupil_answer||'');
-      const ca=norm(b?.correct_answer||'');
-      const setData=PLATFORM_DATA.sets_by_id[String(b?.set_id)];
-      const sent=(setData?.sentences||[]).find(s=>norm(s.latin)===norm(b?.question_text));
-      let ok=false; let best=b?.correct_answer||'';
-      if(sent?.english){ok=sent.english.some(e=>norm(e)===pa);best=sent.english[0]||best;}
-      else{ok=pa.length>0&&pa===ca;}
-      return Promise.resolve({counts_as_correct:ok,correct_answer:best,message:ok?'Correct!':'Not quite.'});
+      const qt=b?.question_type||'';
+      const pa=b?.pupil_answer||'';
+      const ca=b?.correct_answer||'';
+      let ok=false; let best=ca; let msg='';
+      if(qt==='flashcard_rating'){
+        ok=pa==='got_it';
+      } else if(['mc','parsing_mcq','translate_form','tense_id'].includes(qt)){
+        // Exact match — same as backend
+        ok=pa===ca;
+        msg=ok?'Correct!':`The answer is: **${ca}**`;
+      } else if(qt==='latin_typed'||qt==='all_four_typed'){
+        ok=normLat(pa)===normLat(ca);
+        msg=ok?'Correct!':`The correct answer is: ${ca}`;
+      } else if(qt==='sentence'||qt==='typed'||qt==='vocab'){
+        // Check against all accepted translations in set data
+        const setData=PLATFORM_DATA.sets_by_id[String(b?.set_id)];
+        const sent=(setData?.sentences||[]).find(s=>normEng(s.latin)===normEng(b?.question_text||''));
+        if(sent?.english){
+          ok=sent.english.some(e=>normEng(e)===normEng(pa));
+          best=sent.english[0]||ca;
+        } else {
+          // Vocab: correct_answer is "meaning1, meaning2" — check any part
+          const parts=(ca.split(/,\s*/)).map(normEng);
+          ok=parts.some(p2=>p2===normEng(pa))||normEng(pa)===normEng(ca);
+        }
+        msg=ok?'Correct!':`Not quite. The answer is: ${best}`;
+      } else {
+        // Fallback: normalised comparison
+        ok=normEng(pa)===normEng(ca)&&pa.length>0;
+        msg=ok?'Correct!':'Not quite.';
+      }
+      return Promise.resolve({counts_as_correct:ok,correct_answer:best,message:msg,result:ok?'correct':'wrong'});
     }
-    return Promise.resolve({session_id:0,counts_as_correct:true});
+    return Promise.resolve({session_id:0});
   };
   // Shuffle once and lock - do NOT re-shuffle on state update
   const shuffleOnce = arr => { const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]} return a };
