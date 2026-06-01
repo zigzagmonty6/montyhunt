@@ -228,7 +228,29 @@
     if(sm) return Promise.resolve(PLATFORM_DATA.sets_by_id[sm[1]]||null);
     return Promise.resolve(Array.isArray([])?[]:{});
   };
-  const post=(p,b)=>Promise.resolve({session_id:0});
+  const norm=s=>(s||'').toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
+  const post=(p,b)=>{
+    if(p==='/api/check'){
+      const {pupil_answer,correct_answer,question_type}=b||{};
+      const pa=norm(pupil_answer||'');
+      const ca=norm(correct_answer||'');
+      // For sentence translation: look up all accepted answers in the set data
+      let counts_as_correct=false;
+      let best_answer=correct_answer||'';
+      if(question_type==='sentence'||question_type==='typed_sentence'){
+        const setData=PLATFORM_DATA.sets_by_id[String(b.set_id)];
+        const sent=(setData?.sentences||[]).find(s=>norm(s.latin)===norm(b.question_text));
+        if(sent&&sent.english){
+          counts_as_correct=sent.english.some(e=>norm(e)===pa);
+          best_answer=sent.english[0]||correct_answer||'';
+        } else { counts_as_correct= pa===ca && pa.length>0; }
+      } else {
+        counts_as_correct = pa.length>0 && pa===ca;
+      }
+      return Promise.resolve({counts_as_correct,correct_answer:best_answer,message:counts_as_correct?'Correct!':'Not quite.'});
+    }
+    return Promise.resolve({session_id:0});
+  };
   // Shuffle once and lock - do NOT re-shuffle on state update
   const shuffleOnce = arr => { const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]} return a };
   // Always scroll .activity-body back to top (window.scrollTo doesn't reach it)
