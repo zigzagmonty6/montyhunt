@@ -32,66 +32,67 @@ var api = function api(p) {
   if (sm) return Promise.resolve(PLATFORM_DATA.sets_by_id[sm[1]] || null);
   return Promise.resolve([]);
 };
-var _nl = function _nl(s) {
-  return (s || '').toLowerCase().replace(/[^a-z ]/g, '').replace(/\s+/g, ' ').trim();
-};
-var _ne = function _ne(s) {
-  return (s || '').toLowerCase().replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
-};
 var post = function post(p, b) {
   if (p !== '/api/check') return Promise.resolve({
     session_id: 0
   });
+  var M = window._marking;
   var qt = b && b.question_type || '';
   var pa = b && b.pupil_answer || '';
   var ca = b && b.correct_answer || '';
-  var ok = false,
-    best = ca,
-    msg = '';
+  var res;
   if (qt === 'flashcard_rating') {
-    ok = pa === 'got_it';
+    res = {
+      counts_as_correct: pa === 'got_it',
+      correct_answer: ca,
+      result: pa === 'got_it' ? 'correct' : 'wrong',
+      message: ''
+    };
   } else if (qt === 'mc' || qt === 'parsing_mcq' || qt === 'tense_id') {
-    ok = pa === ca;
-    best = ca;
-    msg = ok ? 'Correct!' : 'The answer is: ' + ca;
+    var ok = pa === ca;
+    res = {
+      counts_as_correct: ok,
+      correct_answer: ca,
+      result: ok ? 'correct' : 'wrong',
+      message: ok ? 'Correct!' : 'The answer is: **' + ca + '**'
+    };
   } else if (qt === 'sentence') {
-    // Use sentence_index to look up exact sentence data
     var setD = PLATFORM_DATA.sets_by_id[String(b && b.set_id)];
     var sents = setD && setD.sentences || [];
     var sidx = b && b.sentence_index != null ? b.sentence_index : null;
     var sent = sidx != null && sents[sidx] ? sents[sidx] : sents.find(function (s) {
-      return _ne(s.latin) === _ne(b && b.question_text || '');
+      return M.norm(s.latin) === M.norm(b && b.question_text || '');
     });
-    if (sent && sent.english && sent.english.length) {
-      best = sent.english[0];
-      ok = sent.english.some(function (e) {
-        return _ne(e) === _ne(pa);
-      });
-      msg = ok ? 'Correct!' : sent.explanation || 'Not quite — ' + best;
-    } else {
-      ok = false;
-      msg = '';
-    }
+    res = sent ? M.checkSentence(pa, sent) : {
+      counts_as_correct: false,
+      correct_answer: ca,
+      result: 'wrong',
+      message: 'Not found.'
+    };
   } else if (qt === 'translate_form') {
-    // Backend uses check_sentence for translate_form too — do lenient match
-    ok = _ne(pa) === _ne(ca);
-    best = ca;
-    msg = ok ? 'Correct!' : 'The correct answer is: ' + ca;
-  } else if (qt === 'latin_typed' || qt === 'all_four_typed') {
-    ok = _nl(pa) === _nl(ca);
-    best = ca;
-    msg = ok ? 'Correct!' : 'The correct answer is: ' + ca;
+    var sentObj = {
+      latin: b && b.question_text || '',
+      english: [ca],
+      explanation: ''
+    };
+    res = M.checkSentence(pa, sentObj);
+  } else if (qt === 'latin_typed') {
+    res = M.checkLatinTyped(pa, ca);
+  } else if (qt === 'all_four_typed') {
+    var parts = (ca || '').split(' ');
+    res = parts.length >= 2 ? M.checkAllFourParts(pa, parts[0], parts[1], parts[2] || null) : M.checkLatinTyped(pa, ca);
+  } else if (qt === 'parsing') {
+    var pp = (ca || '').split('|');
+    res = pp.length === 3 ? M.checkParsing(b.tense || '', b.person || '', b.number || '', pp[0], pp[1], pp[2]) : {
+      counts_as_correct: false,
+      correct_answer: ca,
+      result: 'wrong',
+      message: ''
+    };
   } else {
-    ok = _ne(pa) === _ne(ca) && pa.length > 0;
-    best = ca;
-    msg = ok ? 'Correct!' : 'Not quite.';
+    res = M.checkVocabSimple(pa, ca);
   }
-  return Promise.resolve({
-    counts_as_correct: ok,
-    correct_answer: best,
-    result: ok ? 'correct' : 'wrong',
-    message: msg
-  });
+  return Promise.resolve(res);
 };
 // Shuffle once and lock - do NOT re-shuffle on state update
 var shuffleOnce = function shuffleOnce(arr) {
