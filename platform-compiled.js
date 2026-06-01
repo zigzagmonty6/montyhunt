@@ -45,33 +45,52 @@ var post = function post(p, b) {
   var qt = b && b.question_type || '';
   var pa = b && b.pupil_answer || '';
   var ca = b && b.correct_answer || '';
-  var ok = false;
+  var ok = false,
+    best = ca,
+    msg = '';
   if (qt === 'flashcard_rating') {
     ok = pa === 'got_it';
-  } else if (['mc', 'parsing_mcq', 'translate_form', 'tense_id'].includes(qt)) {
+  } else if (qt === 'mc' || qt === 'parsing_mcq' || qt === 'tense_id') {
     ok = pa === ca;
-  } else if (qt === 'latin_typed' || qt === 'all_four_typed') {
-    ok = _nl(pa) === _nl(ca);
-  } else {
+    best = ca;
+    msg = ok ? 'Correct!' : 'The answer is: ' + ca;
+  } else if (qt === 'sentence') {
+    // Use sentence_index to look up exact sentence data
     var setD = PLATFORM_DATA.sets_by_id[String(b && b.set_id)];
     var sents = setD && setD.sentences || [];
-    var qt2 = b && b.question_text || '';
-    var sent = sents.find(function (s) {
-      return _ne(s.latin) === _ne(qt2);
+    var sidx = b && b.sentence_index != null ? b.sentence_index : null;
+    var sent = sidx != null && sents[sidx] ? sents[sidx] : sents.find(function (s) {
+      return _ne(s.latin) === _ne(b && b.question_text || '');
     });
-    if (sent && sent.english) {
+    if (sent && sent.english && sent.english.length) {
+      best = sent.english[0];
       ok = sent.english.some(function (e) {
         return _ne(e) === _ne(pa);
       });
+      msg = ok ? 'Correct!' : sent.explanation || 'Not quite — ' + best;
     } else {
-      ok = _ne(pa) === _ne(ca) && pa.length > 0;
+      ok = false;
+      msg = '';
     }
+  } else if (qt === 'translate_form') {
+    // Backend uses check_sentence for translate_form too — do lenient match
+    ok = _ne(pa) === _ne(ca);
+    best = ca;
+    msg = ok ? 'Correct!' : 'The correct answer is: ' + ca;
+  } else if (qt === 'latin_typed' || qt === 'all_four_typed') {
+    ok = _nl(pa) === _nl(ca);
+    best = ca;
+    msg = ok ? 'Correct!' : 'The correct answer is: ' + ca;
+  } else {
+    ok = _ne(pa) === _ne(ca) && pa.length > 0;
+    best = ca;
+    msg = ok ? 'Correct!' : 'Not quite.';
   }
   return Promise.resolve({
     counts_as_correct: ok,
-    correct_answer: ca,
+    correct_answer: best,
     result: ok ? 'correct' : 'wrong',
-    message: ok ? 'Correct!' : 'Not quite — ' + ca
+    message: msg
   });
 };
 // Shuffle once and lock - do NOT re-shuffle on state update
