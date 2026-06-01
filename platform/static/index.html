@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>West London Free School Latin â€” GCSE</title>
+  <title>Principal Parts Platform</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
@@ -703,7 +703,7 @@
   }
 
   function TeacherDashboard({onLogout,onStart,children}){
-    const [tab,setTab]=useState('homework');
+    const [tab,setTab]=useState('preview');
     const [sets,setSets]=useState([]);
     const [overview,setOverview]=useState([]);
     const [weak,setWeak]=useState([]);
@@ -766,9 +766,9 @@
 
     return(
       <div className="fullscreen">
-        <div className="topbar"><h1>WLFS â€” TEACHER PORTAL</h1>
+        <div className="topbar"><h1>Principal Parts Platform</h1>
           <div style={{display:'flex',gap:24,alignItems:'center'}}>
-            <span style={{fontSize:'1.2rem',fontWeight:700}}>Magistra</span>
+            
             <button onClick={onLogout} style={{background:'rgba(255,255,255,.2)',color:'#fff',padding:'10px 20px',fontSize:'1rem',border:'none',borderRadius:10,fontWeight:700,cursor:'pointer'}}>Log out</button>
           </div>
         </div>
