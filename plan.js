@@ -446,7 +446,7 @@
   const toSvg = (e) => { const m = svgEl.getScreenCTM(); if (!m) return null; const pt = svgEl.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY; return pt.matrixTransform(m.inverse()); };
   const ACTION = {
     cv:      { type: 'download', href: 'files/Monty-Hunt-CV.pdf', name: 'Monty Hunt "” CV.pdf' },
-    edtech:  { type: 'newtab',   href: 'edtech.html' },
+    edtech:  { type: 'go',       href: 'platform-demo.html' },
     about:   { type: 'go',       href: 'about.html' },
     garden:  { type: 'go',       href: 'garden.html' },
     output:  { type: 'go',       href: 'output.html' },
